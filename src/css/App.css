@@ -1,0 +1,11 @@
+#root {
+  background: url("../img/bg.jpg");
+  background-size: cover;
+  background-attachment: fixed;
+  text-align: center; }
+  @media (min-width: 900px) {
+    #root {
+      padding: 2em; } }
+
+h1, h2, h3, h4, h5, h6 {
+  text-align: left; }

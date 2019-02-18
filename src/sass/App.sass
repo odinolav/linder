@@ -1,0 +1,32 @@
+// Media
+@mixin phone
+  @media (max-width: 599px)
+    @content
+
+@mixin tablet-portrait-up
+  @media (min-width: 600px)
+    @content
+
+@mixin tablet-landscape-up
+  @media (min-width: 900px)
+    @content
+
+@mixin desktop-up
+  @media (min-width: 1200px)
+    @content
+
+@mixin big-desktop-up
+  @media (min-width: 1800px)
+    @content
+
+#root
+  background: url('../img/bg.jpg')
+  background-size: cover
+  background-attachment: fixed
+  //background: #eceff1
+  text-align: center
+  @include tablet-landscape-up
+    padding: 2em
+
+h1,h2,h3,h4,h5,h6
+  text-align: left
