@@ -1,4 +1,6 @@
 #root {
+  min-height: 100vh;
+  padding-bottom: 2em;
   background: url("../img/bg.jpg");
   background-size: cover;
   background-attachment: fixed;

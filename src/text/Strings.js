@@ -10,13 +10,6 @@ export default {
     'Describe, in as much detail as you can, your affective state.',
     'Other comments?'
   ],
-  timeImages: {
-    'Wake Up': './img/morning.jpg',
-    'Mid-Morning': 'img/midmorning.jpg',
-    'Afternoon': 'img/afternoon.jpg',
-    'Early Evening': 'img/earlyevening.jpg',
-    'Night': 'img/night.jpg',
-  },
   endOfDayPrompt: 'End of the day reflection / other comments',
   background: `My senior project will examine student perceptions of stress. In this study, we would like to find out how the higher
     education experience affects students’ perception of stress. We want to find out what counts as “stressful” for American college
