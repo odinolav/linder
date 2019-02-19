@@ -57,12 +57,12 @@ const styles = theme => ({
     height: 60,
   },
   card: {
-    width: 200,
-    margin: 10
+    width: 180,
+    margin: 8
   },
   expandedCard: {
     width: 350,
-    margin: 10
+    margin: 0
   },
   media: {
     height: 120,
