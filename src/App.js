@@ -1,4 +1,5 @@
 import 'date-fns';
+import {format} from 'date-fns/esm'
 import React, {Component} from 'react';
 import './css/App.css';
 import { withStyles } from '@material-ui/core/styles';
@@ -9,25 +10,27 @@ import TextField from '@material-ui/core/TextField';
 import { MuiPickersUtilsProvider, TimePicker, DatePicker } from 'material-ui-pickers';
 import DateFnsUtils from '@date-io/date-fns';
 import Fab from '@material-ui/core/Fab';
-import { Navigation, Edit, ExpandMore, CalendarToday, Info } from '@material-ui/icons';
+import { ExpandMore, CalendarToday, Info, Warning } from '@material-ui/icons';
 import IconButton from '@material-ui/core/IconButton';
 import Dialog from '@material-ui/core/Dialog';
 import DialogActions from '@material-ui/core/DialogActions';
 import DialogContent from '@material-ui/core/DialogContent';
 import DialogContentText from '@material-ui/core/DialogContentText';
 import DialogTitle from '@material-ui/core/DialogTitle';
+import AppBar from '@material-ui/core/AppBar';
+import Toolbar from '@material-ui/core/Toolbar';
 import Slide from '@material-ui/core/Slide';
 import Card from '@material-ui/core/Card';
 import CardActionArea from '@material-ui/core/CardActionArea';
 import CardActions from '@material-ui/core/CardActions';
 import CardContent from '@material-ui/core/CardContent';
 import CardMedia from '@material-ui/core/CardMedia';
-import CardHeader from '@material-ui/core/CardHeader';
+import Chip from '@material-ui/core/Chip';
 import Collapse from '@material-ui/core/Collapse';
 import Typography from '@material-ui/core/Typography';
 import classnames from 'classnames';
-//import InputAdornment from '@material-ui/core/InputAdornment';
-//import IconButton from '@material-ui/core/IconButton';
+import Tooltip from '@material-ui/core/Tooltip';
+import Avatar from '@material-ui/core/Avatar'
 
 import STRINGS from './text/Strings';
 import WAKEUP from './img/morning.jpg';
@@ -35,7 +38,7 @@ import MIDMORNING from './img/midmorning.jpg';
 import AFTERNOON from './img/afternoon.jpg';
 import EARLYEVENING from './img/earlyevening.jpg';
 import NIGHT from './img/night.jpg';
-import CALENDAR from './img/calendar.jpg';
+import EMILY from './img/emily.jpg';
 
 const cardImgMap = {
   'Wake Up': WAKEUP,
@@ -50,25 +53,23 @@ function Transition(props) {
 }
 
 const styles = theme => ({
-  root: {
-    textAlign: 'left',
-    paddingTop: theme.spacing.unit * 8
+  avatar: {
+    width: 60,
+    height: 60,
   },
   card: {
-    width: 250,
+    width: 200,
     margin: 10
   },
-  infoCard: {
-    width: '100%',
+  expandedCard: {
+    width: 350,
     margin: 10
   },
   media: {
-    height: 200,
+    height: 120,
   },
   actions: {
     display: 'flex',
-  },
-  submit: {
   },
   expand: {
     transform: 'rotate(0deg)',
@@ -80,12 +81,29 @@ const styles = theme => ({
   expandOpen: {
     transform: 'rotate(180deg)',
   },
+  appBar: {
+    top: 'auto',
+    bottom: 0
+  },
+  toolbar: {
+    alignItems: 'center',
+    justifyContent: 'space-between',
+  },
+  emilyButton: {
+    position: 'absolute',
+    zIndex: 1,
+    top: -30,
+    left: 0,
+    right: 0,
+    margin: '0 auto'
+  },
 });
 
 class App extends Component {
+
   constructor() {
     super();
-    let now = new Date();
+    //let now = new Date();
     this.state = {
       open: false,
       daySchedule: {
@@ -100,28 +118,89 @@ class App extends Component {
       'Afternoon_Expanded': false,
       'Early Evening_Expanded': false,
       'Night_Expanded': false,
-      endOfDay: '',
-      date1: now.getTime(),
-      date2: now.getTime(),
+      //date1: '20190228T110200Z',
+      //date2: '20190228T110200Z',
       dialogBody: '',
       popupTitle: '',
+      name: '',
+      dialogActions: this.OkayDialogButton(),
+      eventString: `https://calendar.google.com/calendar/r/eventedit?text=Journaling+for+Emily+Linder&location=Decorah,+IA&details=Make+sure+to+visit+odinolav.com/linder`
     }
   }
+
+  componentWillMount() {
+    let today = this.getReadableDate();
+    if (localStorage['daySchedule_'+today]) {
+      this.setState({
+        daySchedule: JSON.parse(localStorage['daySchedule_'+today])
+      });
+    }
+  }
+
+  componentDidMount() {
+    this.beforeUnload();
+  }
+
+  beforeUnload = () => {
+    let today = this.getReadableDate();
+    window.addEventListener("beforeunload", (ev) => {
+       ev.preventDefault();
+       localStorage['daySchedule_'+today] = JSON.stringify(this.state.daySchedule);
+    });
+   };
+
+   getHumanDate = () => {
+     return format(new Date(),'MM/dd/yyyy');
+   }
+   getReadableDate = () => {
+     return format(new Date(),'MM_dd_yyyy');
+   }
+
+   OkayDialogButton = () => {return <Button onClick={this.handleClose} color='primary'>Okay</Button>};
+
+   encodeEmail = () => {
+     let msg = '';
+     for (let [timeOfDay, responseObj] of Object.entries(this.state.daySchedule)) {
+       msg += timeOfDay + '%0A%0A';
+       for (let val of Object.values(responseObj)) {
+         msg += val + '%0A%0A';
+       }
+       msg += '%0A';
+     }
+     return msg;
+   }
 
   getDate = () => {
     return (new Date()).toISOString().replace(/-|:|\.\d\d\d/g,"");
   }
 
-  buildEventString = () => {
+  convertDate = (date) => {
+    return date.toISOString().replace(/-|:|\.\d\d\d/g,"");
+  }
+
+  updateEventString = () => {
     let title = 'Journaling+for+Emily';
     let details = 'Remember+to+visit+linder.odinolav.com';
-    let startTime = this.state.date1;
-    let endTime = this.state.date2;
-    return `https://calendar.google.com/calendar/r/eventedit?dates=${startTime}/${endTime}&location&text=${title}&details=${details}`;
+    let startTime = '';
+    let endTime = ''
+    this.setState({
+      eventString: `https://calendar.google.com/calendar/r/eventedit?dates=${startTime}/${endTime}&location&text=${title}&details=${details}`
+    });
   }
 
   handleChange = name => event => {
     this.setState({[name]: event.target.value});
+  }
+
+  handleDateChange = (dateName, date) => {
+    console.log(dateName, this.convertDate(date));
+    this.setState({[dateName]: this.convertDate(date)}, this.updateEventString());
+  }
+  handleDateChange1 = date => {
+    this.handleDateChange('date1', date);
+  }
+  handleDateChange2 = date => {
+    this.handleDateChange('date2', date);
   }
 
   handleChangeActivity = (timeOfDay, colIndex) => event => {
@@ -139,44 +218,83 @@ class App extends Component {
 
   showInputDescription = (title, desc) => event => {
     this.setState({
-      dialogBody: desc,
+      dialogBody: <DialogContent><DialogContentText id='alert-dialog-slide-description'>{desc}</DialogContentText></DialogContent>,
       popupTitle: title,
+      dialogActions: this.OkayDialogButton(),
       open: true
     });
   }
 
   openInfoBox = () => {
     this.setState({
-      dialogBody: <span><Typography component='span' variant='h6'>Background</Typography>
+      dialogBody:
+      <DialogContent><DialogContentText id='alert-dialog-slide-description'>
+        <span><Typography component='span' variant='h6'>Background</Typography>
           {STRINGS.background}
+          <br/><br/>
           <Typography component='span' variant='h6'>Instructions</Typography>
-          {STRINGS.instructions}</span>,
+          {STRINGS.instructions}</span>
+      </DialogContentText></DialogContent>,
       popupTitle: 'Research Information',
+      dialogActions: this.OkayDialogButton(),
+      open: true
+    });
+  }
+
+  openDisclaimerBox = () => {
+    this.setState({
+      dialogBody:
+        <DialogContent><DialogContentText id='alert-dialog-slide-description'>
+            {STRINGS.disclaimer}
+        </DialogContentText></DialogContent>,
+      popupTitle: 'Disclaimer',
+      dialogActions: this.OkayDialogButton(),
       open: true
     });
   }
 
   openCalendarSetupBox = () => {
-    let { date1, date2 } = this.state;
     const { classes } = this.props;
+    const { date1, date2 } = this.state;
     this.setState({
-      dialogBody: <span>
-          Set up Google Calendar reminders to never miss a day
-          <CardContent>
-            <MuiPickersUtilsProvider utils={DateFnsUtils}>
-              <Grid container={true} className={classes.grid} justify='space-around'>
-                <DatePicker margin='normal' label='Weekly day 1' value={date1} onChange={this.handleChange('date1')}/>
-                <TimePicker margin='normal' label='Time 1' value={date1} onChange={this.handleChange('date1')}/>
-                <DatePicker margin='normal' label='Weekly day 2' value={date2} onChange={this.handleChange('date2')}/>
-                <TimePicker margin='normal' label='Time 2' value={date2} onChange={this.handleChange('date2')}/>
-              </Grid>
-            </MuiPickersUtilsProvider>
-            <Button variant='contained' href={this.buildEventString()} target='_blank' className={classes.button}>
-              add to calendar
-            </Button>
-          </CardContent>
-        </span>,
+      dialogBody: <DialogContent>
+          <DialogContentText gutterBottom variant="h6" component="h2">Set up Google Calendar reminders to never miss a day</DialogContentText>
+          <MuiPickersUtilsProvider utils={DateFnsUtils}>
+            <Grid container={true} className={classes.grid} justify='space-around'>
+              <DatePicker margin='normal' label='Date picker' value={date1} onChange={this.handleDateChange1}/>
+              <TimePicker margin='normal' label='Time picker' value={date1} onChange={this.handleDateChange1}/>
+            </Grid>
+          </MuiPickersUtilsProvider>
+          <MuiPickersUtilsProvider utils={DateFnsUtils}>
+            <Grid container={true} className={classes.grid} justify='space-around'>
+              <DatePicker margin='normal' label='Date picker' value={date2} onChange={this.handleDateChange2}/>
+              <TimePicker margin='normal' label='Time picker' value={date2} onChange={this.handleDateChange2}/>
+            </Grid>
+          </MuiPickersUtilsProvider>
+        </DialogContent>,
       popupTitle: 'Calendar Reminders',
+      dialogActions:
+        <DialogActions>
+          <Button onClick={this.handleClose}
+                  href={this.state.eventString}
+                  target='_blank'
+                  className={classes.button}
+                  color='primary'>Add to Calendar
+          </Button>
+          <Button onClick={this.handleClose} color='secondary'>Return</Button>
+      </DialogActions>,
+      open: true
+    });
+  }
+
+  openInputBox = (timeOfDay, rowValue, classes) => {
+    let body = STRINGS.headers.map((header, i) => {
+      return this.LinderInput(header, timeOfDay, i, classes, rowValue[i])
+    });
+
+    this.setState({
+      dialogBody: body,
+      popupTitle: timeOfDay,
       open: true
     });
   }
@@ -194,8 +312,8 @@ class App extends Component {
       rowsMax='20'
       fullWidth
       value={text}
+      placeholder={STRINGS.headerAlternates[i]}
       onChange={this.handleChangeActivity(timeOfDay, i)}
-      className={classes}
       margin='normal'
       helperText=''
       variant='outlined'
@@ -205,11 +323,13 @@ class App extends Component {
 
   render() {
     const { classes } = this.props;
+    const ds = this.state.daySchedule;
     let inputFields = [];
-    for (let [timeOfDay, rowValue] of Object.entries(this.state.daySchedule)) {
+    for (let [timeOfDay, rowValue] of Object.entries(ds)) {
       let expanded = timeOfDay+'_Expanded';
+      let complete = ds[timeOfDay][0] && ds[timeOfDay][1];
       inputFields.push(
-        <Card className={classes.card} key={`c-${timeOfDay}`}>
+        <Card className={this.state[expanded] ? classes.expandedCard : classes.card} key={`c-${timeOfDay}`}>
           <CardActionArea>
             <CardMedia
               className={classes.media}
@@ -221,9 +341,7 @@ class App extends Component {
             </CardContent>
           </CardActionArea>
           <CardActions>
-            <Button size="small" color="primary">
-              <Edit />
-            </Button>
+            <Chip color={complete ? 'primary' : 'secondary'} label={complete ? 'Ready' : 'Incomplete'}/>
             <IconButton
               className={classnames(classes.expand, {
                 [classes.expandOpen]: this.state[expanded],
@@ -246,7 +364,8 @@ class App extends Component {
       );
     };
 
-    return (<div className={classes.root}>
+    return (<div id='app'>
+    <div id='mainarea'>
       <Dialog
           open={this.state.open}
           TransitionComponent={Transition}
@@ -259,40 +378,50 @@ class App extends Component {
         <DialogTitle id='alert-dialog-slide-title' color='primary'>
           <Typography component='span' variant='h4' color='primary'>{this.state.popupTitle}</Typography>
         </DialogTitle>
-        <DialogContent>
-          <DialogContentText id='alert-dialog-slide-description'>
-            {this.state.dialogBody}
-          </DialogContentText>
-        </DialogContent>
-        <DialogActions>
-          <Button onClick={this.handleClose} color='primary'>Okay</Button>
-        </DialogActions>
+        {this.state.dialogBody}
+        {this.state.dialogActions}
       </Dialog>
 
       <form className={classes.container} noValidate='noValidate'>
-        <Grid container className={classes.root} spacing={16} justify='center' alignItems='flex-start'>
-          <Card className={classes.infoCard} key={`c-cal`}>
-            <CardHeader title={STRINGS.title}></CardHeader>
-            <CardActions className='center'>
-              <Button size="small" color="primary" onClick={this.openCalendarSetupBox}>
-                <CalendarToday /> Reminders
-              </Button>
-              <Button size="small" color='secondary' onClick={this.openInfoBox}>
-                <Info /> Project Info
-              </Button>
-            </CardActions>
-          </Card>
-
+        <Grid container className={classes.root} justify='center' alignItems='center'>
           {inputFields}
-
-          <Fab variant='extended' aria-label='Add' className={classes.submit}>
-           <Navigation className={classes.extendedIcon} />
-           Submit
-          </Fab>
         </Grid>
-
       </form>
-      <footer>{this.disclaimer}</footer>
+    </div>
+
+      <AppBar position="fixed" color="primary" className={classes.appBar}>
+        <Toolbar className={classes.toolbar}>
+          <Typography variant="h6" color="inherit" className={classes.grow}>
+            {STRINGS.title}
+          </Typography>
+          <Tooltip title="Send to Emily">
+            <Fab
+              className={classes.emilyButton}
+              href={`mailto:lindem01@luther.edu?subject=Research Journal for ${this.state.name} ${this.getHumanDate()}&body=${this.encodeEmail()}`}
+              target='_blank'
+              >
+              <Avatar alt="Emily Linder" src={EMILY} className={classes.avatar}/>
+            </Fab>
+          </ Tooltip>
+          <div>
+            <Tooltip title="Reminders">
+              <Button color="inherit" href={this.state.eventString} target='_blank'>
+                <CalendarToday />
+              </Button>
+            </ Tooltip>
+            <Tooltip title="Project Info" onClick={this.openInfoBox}>
+              <Button color="inherit" aria-label="Project Info">
+                <Info />
+              </Button>
+            </ Tooltip>
+            <Tooltip title="Disclaimer" onClick={this.openDisclaimerBox}>
+              <Button color="inherit" aria-label="Disclaimer">
+                <Warning />
+              </Button>
+            </ Tooltip>
+          </div>
+        </Toolbar>
+      </AppBar>
     </div>);
   }
 }

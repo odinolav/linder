@@ -1,9 +1,14 @@
 export default {
-  title: 'Daily Journaling',
+  title: 'Journal',
   headers: [
     'Significant events',
     'Affective state',
     'Comments'
+  ],
+  headerAlternates: [
+    'Activities and locations',
+    'Emotional/stress reactions',
+    'Additional info'
   ],
   headerDescriptions: [
     'Significant things that happened. Describe activities and locations you were engaged in.',

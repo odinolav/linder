@@ -19,16 +19,31 @@
   @media (min-width: 1800px)
     @content
 
+*::-webkit-scrollbar
+  display: none
+  width: 0
+
 #root
+  display: grid
+  grid-template-columns: 1fr 0 0
+  justify-content: center
+  align-items: center
   min-height: 100vh
-  padding-bottom: 2em
   background: url('../img/bg.jpg')
   background-size: cover
   background-attachment: fixed
-  //background: #eceff1
-  text-align: center
+  transition: .2s
+  //background: #fafafa
   @include tablet-landscape-up
-    padding: 2em
+    padding: 2em 2em
 
-h1,h2,h3,h4,h5,h6
-  text-align: left
+#mainarea
+  margin-top: 1em
+  margin-bottom: 6em
+
+.mobile
+  @include tablet-landscape-up
+    display: none
+.non-mobile
+  @include phone
+    display: none

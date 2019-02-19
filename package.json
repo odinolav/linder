@@ -10,7 +10,8 @@
     "material-ui-pickers": "^2.2.1",
     "react": "^16.8.2",
     "react-dom": "^16.8.2",
-    "react-scripts": "2.1.5"
+    "react-scripts": "2.1.5",
+    "typescript": "^3.3.3"
   },
   "scripts": {
     "sass": "node-sass --watch ./src/sass -o ./src/css",
@@ -29,6 +30,7 @@
     "not op_mini all"
   ],
   "devDependencies": {
+    "gh-pages": "^2.0.1",
     "node-sass": "^4.11.0",
     "nodemon": "^1.18.10"
   }
