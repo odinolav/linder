@@ -14,7 +14,7 @@
 importScripts("https://storage.googleapis.com/workbox-cdn/releases/3.6.3/workbox-sw.js");
 
 importScripts(
-  "/linder/precache-manifest.db53b99fbf0873b96c84652264d7908d.js"
+  "/linder/precache-manifest.92ff079961130287e6d7b50c0ba2c71c.js"
 );
 
 workbox.clientsClaim();
