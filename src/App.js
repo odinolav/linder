@@ -10,7 +10,7 @@ import TextField from '@material-ui/core/TextField';
 import { MuiPickersUtilsProvider, TimePicker, DatePicker } from 'material-ui-pickers';
 import DateFnsUtils from '@date-io/date-fns';
 import Fab from '@material-ui/core/Fab';
-import { ExpandMore, CalendarToday, Info, Warning } from '@material-ui/icons';
+import { Edit, CalendarToday, Info, Warning } from '@material-ui/icons';
 import IconButton from '@material-ui/core/IconButton';
 import Dialog from '@material-ui/core/Dialog';
 import DialogActions from '@material-ui/core/DialogActions';
@@ -32,6 +32,7 @@ import classnames from 'classnames';
 import Tooltip from '@material-ui/core/Tooltip';
 import Avatar from '@material-ui/core/Avatar'
 
+import SECRET_STRINGS from './text/SecretStrings';
 import STRINGS from './text/Strings';
 import WAKEUP from './img/morning.jpg';
 import MIDMORNING from './img/midmorning.jpg';
@@ -39,6 +40,7 @@ import AFTERNOON from './img/afternoon.jpg';
 import EARLYEVENING from './img/earlyevening.jpg';
 import NIGHT from './img/night.jpg';
 import EMILY from './img/emily.jpg';
+
 
 const cardImgMap = {
   'Wake Up': WAKEUP,
@@ -79,7 +81,7 @@ const styles = theme => ({
     }),
   },
   expandOpen: {
-    transform: 'rotate(180deg)',
+    transform: 'rotate(-90deg)',
   },
   appBar: {
     top: 'auto',
@@ -161,9 +163,9 @@ class App extends Component {
    encodeEmail = () => {
      let msg = '';
      for (let [timeOfDay, responseObj] of Object.entries(this.state.daySchedule)) {
-       msg += timeOfDay + '%0A%0A';
-       for (let val of Object.values(responseObj)) {
-         msg += val + '%0A%0A';
+       msg += timeOfDay + '%0A';
+       for (let [header, val] of Object.entries(responseObj)) {
+         if (val) {msg += `  ${STRINGS.headers[header]}%0A${val}%0A`;}
        }
        msg += '%0A';
      }
@@ -350,7 +352,7 @@ class App extends Component {
               aria-expanded={this.state[expanded]}
               aria-label="Show more"
             >
-              <ExpandMore />
+              <Edit />
             </IconButton>
           </CardActions>
           <Collapse in={this.state[expanded]} timeout="auto" unmountOnExit>
@@ -397,7 +399,7 @@ class App extends Component {
           <Tooltip title="Send to Emily">
             <Fab
               className={classes.emilyButton}
-              href={`mailto:lindem01@luther.edu?subject=Research Journal for ${this.state.name} ${this.getHumanDate()}&body=${this.encodeEmail()}`}
+              href={`mailto:${SECRET_STRINGS.targetEmail}?subject=Research Journal for ${this.state.name} ${this.getHumanDate()}&body=${this.encodeEmail()}`}
               target='_blank'
               >
               <Avatar alt="Emily Linder" src={EMILY} className={classes.avatar}/>
