@@ -22,8 +22,8 @@
 
 @media (min-width: 900px) {
   .mobile {
-    display: none; } }
+    display: none !important; } }
 
 @media (max-width: 599px) {
   .non-mobile {
-    display: none; } }
+    display: none !important; } }

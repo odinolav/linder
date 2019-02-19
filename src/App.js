@@ -7,13 +7,10 @@ import withRoot from './withRoot';
 import Grid from '@material-ui/core/Grid';
 import Button from '@material-ui/core/Button';
 import TextField from '@material-ui/core/TextField';
-import { MuiPickersUtilsProvider, TimePicker, DatePicker } from 'material-ui-pickers';
-import DateFnsUtils from '@date-io/date-fns';
 import Fab from '@material-ui/core/Fab';
 import { Edit, CalendarToday, Info, Warning } from '@material-ui/icons';
 import IconButton from '@material-ui/core/IconButton';
 import Dialog from '@material-ui/core/Dialog';
-import DialogActions from '@material-ui/core/DialogActions';
 import DialogContent from '@material-ui/core/DialogContent';
 import DialogContentText from '@material-ui/core/DialogContentText';
 import DialogTitle from '@material-ui/core/DialogTitle';
@@ -120,8 +117,6 @@ class App extends Component {
       'Afternoon_Expanded': false,
       'Early Evening_Expanded': false,
       'Night_Expanded': false,
-      //date1: '20190228T110200Z',
-      //date2: '20190228T110200Z',
       dialogBody: '',
       popupTitle: '',
       name: '',
@@ -194,17 +189,6 @@ class App extends Component {
     this.setState({[name]: event.target.value});
   }
 
-  handleDateChange = (dateName, date) => {
-    console.log(dateName, this.convertDate(date));
-    this.setState({[dateName]: this.convertDate(date)}, this.updateEventString());
-  }
-  handleDateChange1 = date => {
-    this.handleDateChange('date1', date);
-  }
-  handleDateChange2 = date => {
-    this.handleDateChange('date2', date);
-  }
-
   handleChangeActivity = (timeOfDay, colIndex) => event => {
     let currentDaySchedule = this.state.daySchedule;
     currentDaySchedule[timeOfDay][colIndex] = event.target.value;
@@ -251,40 +235,6 @@ class App extends Component {
         </DialogContentText></DialogContent>,
       popupTitle: 'Disclaimer',
       dialogActions: this.OkayDialogButton(),
-      open: true
-    });
-  }
-
-  openCalendarSetupBox = () => {
-    const { classes } = this.props;
-    const { date1, date2 } = this.state;
-    this.setState({
-      dialogBody: <DialogContent>
-          <DialogContentText gutterBottom variant="h6" component="h2">Set up Google Calendar reminders to never miss a day</DialogContentText>
-          <MuiPickersUtilsProvider utils={DateFnsUtils}>
-            <Grid container={true} className={classes.grid} justify='space-around'>
-              <DatePicker margin='normal' label='Date picker' value={date1} onChange={this.handleDateChange1}/>
-              <TimePicker margin='normal' label='Time picker' value={date1} onChange={this.handleDateChange1}/>
-            </Grid>
-          </MuiPickersUtilsProvider>
-          <MuiPickersUtilsProvider utils={DateFnsUtils}>
-            <Grid container={true} className={classes.grid} justify='space-around'>
-              <DatePicker margin='normal' label='Date picker' value={date2} onChange={this.handleDateChange2}/>
-              <TimePicker margin='normal' label='Time picker' value={date2} onChange={this.handleDateChange2}/>
-            </Grid>
-          </MuiPickersUtilsProvider>
-        </DialogContent>,
-      popupTitle: 'Calendar Reminders',
-      dialogActions:
-        <DialogActions>
-          <Button onClick={this.handleClose}
-                  href={this.state.eventString}
-                  target='_blank'
-                  className={classes.button}
-                  color='primary'>Add to Calendar
-          </Button>
-          <Button onClick={this.handleClose} color='secondary'>Return</Button>
-      </DialogActions>,
       open: true
     });
   }
@@ -395,6 +345,9 @@ class App extends Component {
         <Toolbar className={classes.toolbar}>
           <Typography variant="h6" color="inherit" className={classes.grow}>
             {STRINGS.title}
+            <Button color="inherit" aria-label="Project Info" className='mobile'>
+              <Info />
+            </Button>
           </Typography>
           <Tooltip title="Send to Emily">
             <Fab
@@ -406,12 +359,7 @@ class App extends Component {
             </Fab>
           </ Tooltip>
           <div>
-            <Tooltip title="Reminders">
-              <Button color="inherit" href={this.state.eventString} target='_blank'>
-                <CalendarToday />
-              </Button>
-            </ Tooltip>
-            <Tooltip title="Project Info" onClick={this.openInfoBox}>
+            <Tooltip title="Project Info"  className='non-mobile' onClick={this.openInfoBox}>
               <Button color="inherit" aria-label="Project Info">
                 <Info />
               </Button>
@@ -419,6 +367,11 @@ class App extends Component {
             <Tooltip title="Disclaimer" onClick={this.openDisclaimerBox}>
               <Button color="inherit" aria-label="Disclaimer">
                 <Warning />
+              </Button>
+            </ Tooltip>
+            <Tooltip title="Reminders">
+              <Button color="inherit" href={this.state.eventString} target='_blank'>
+                <CalendarToday />
               </Button>
             </ Tooltip>
           </div>
