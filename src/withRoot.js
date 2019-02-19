@@ -20,6 +20,7 @@ const theme = createMuiTheme({
   },
   typography: {
     useNextVariants: true,
+    fontSize: 12,
   },
   type: 'light',
 });

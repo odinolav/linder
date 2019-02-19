@@ -64,6 +64,14 @@ const styles = theme => ({
     width: 350,
     margin: 0
   },
+  phoneCard: {
+    width: 150,
+    margin: 8
+  },
+  expandedPhoneCard: {
+    width: '99%',
+    margin: 0
+  },
   media: {
     height: 120,
   },
@@ -81,8 +89,12 @@ const styles = theme => ({
     transform: 'rotate(-90deg)',
   },
   appBar: {
+    position: 'fixed',
     top: 'auto',
     bottom: 0
+  },
+  bottomAppBar: {
+    position: 'static',
   },
   toolbar: {
     alignItems: 'center',
@@ -153,6 +165,14 @@ class App extends Component {
      return format(new Date(),'MM_dd_yyyy');
    }
 
+   somethingExpanded = () => {
+      if (this.state['Wake Up_Expanded'] || this.state['Mid-Morning_Expanded'] || this.state['Afternoon_Expanded'] ||
+          this.state['Early Evening_Expanded'] || this.state['Night_Expanded']) {
+        return true;
+      }
+      return false;
+   }
+
    OkayDialogButton = () => {return <Button onClick={this.handleClose} color='primary'>Okay</Button>};
 
    encodeEmail = () => {
@@ -160,7 +180,7 @@ class App extends Component {
      for (let [timeOfDay, responseObj] of Object.entries(this.state.daySchedule)) {
        msg += timeOfDay + '%0A';
        for (let [header, val] of Object.entries(responseObj)) {
-         if (val) {msg += `  ${STRINGS.headers[header]}%0A${val}%0A`;}
+         if (val) {msg += `   ${STRINGS.headers[header]}%0A      ${val}%0A`;}
        }
        msg += '%0A';
      }
@@ -199,7 +219,10 @@ class App extends Component {
 
   handleExpandClick = (timeOfDay) => {
     let name = timeOfDay+'_Expanded';
-    this.setState(prevState => ({ [name]: !prevState[name] }));
+    this.setState(prevState => (
+      {
+        [name]: !prevState[name]
+      }));
   };
 
   showInputDescription = (title, desc) => event => {
@@ -274,14 +297,25 @@ class App extends Component {
   }
 
   render() {
+    const isMobile = window.innerWidth < 600;
     const { classes } = this.props;
     const ds = this.state.daySchedule;
-    let inputFields = [];
+    let cardClass;
+    let mainCards = [];
     for (let [timeOfDay, rowValue] of Object.entries(ds)) {
       let expanded = timeOfDay+'_Expanded';
       let complete = ds[timeOfDay][0] && ds[timeOfDay][1];
-      inputFields.push(
-        <Card className={this.state[expanded] ? classes.expandedCard : classes.card} key={`c-${timeOfDay}`}>
+      if (this.state[expanded] && isMobile) {
+        cardClass = classes.expandedPhoneCard;
+      } else if (this.state[expanded]) {
+        cardClass = classes.expandedCard;
+      } else if (isMobile) {
+        cardClass = classes.phoneCard;
+      } else {
+        cardClass = classes.card;
+      }
+      mainCards.push(
+        <Card className={cardClass} key={`c-${timeOfDay}`}>
           <CardActionArea>
             <CardMedia
               className={classes.media}
@@ -289,7 +323,7 @@ class App extends Component {
               title={timeOfDay}
             />
             <CardContent>
-              <Typography gutterBottom variant="h5" component="h2">{timeOfDay}</Typography>
+              <Typography gutterBottom variant={isMobile ? "h6": "h5"} component="h2">{timeOfDay}</Typography>
             </CardContent>
           </CardActionArea>
           <CardActions>
@@ -336,12 +370,14 @@ class App extends Component {
 
       <form className={classes.container} noValidate='noValidate'>
         <Grid container className={classes.root} justify='center' alignItems='center'>
-          {inputFields}
+          {mainCards}
         </Grid>
       </form>
     </div>
 
-      <AppBar position="fixed" color="primary" className={classes.appBar}>
+      <AppBar color="primary"
+              className={(isMobile && this.somethingExpanded()) ? classes.bottomAppBar : classes.appBar}
+      >
         <Toolbar className={classes.toolbar}>
           <Typography variant="h6" color="inherit" className={classes.grow}>
             {STRINGS.title}
