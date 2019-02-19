@@ -4,16 +4,16 @@ self.__precacheManifest = [
     "url": "/linder/static/media/afternoon.13557a11.jpg"
   },
   {
-    "revision": "b2d9cf481c3b29957c67",
-    "url": "/linder/static/css/main.653c955b.chunk.css"
+    "revision": "5d6778636981d18b7008",
+    "url": "/linder/static/css/main.258a7d0d.chunk.css"
   },
   {
     "revision": "6a58dcc4dfac38d389dc",
     "url": "/linder/static/js/runtime~main.6a58dcc4.js"
   },
   {
-    "revision": "ab8c965707dc7b5ee497",
-    "url": "/linder/static/js/2.ab8c9657.chunk.js"
+    "revision": "6e8c1facab87a127536f",
+    "url": "/linder/static/js/2.6e8c1fac.chunk.js"
   },
   {
     "revision": "1cc63b5d4623873331966c6a0f0b5377",
@@ -24,8 +24,8 @@ self.__precacheManifest = [
     "url": "/linder/static/media/midmorning.af6168ab.jpg"
   },
   {
-    "revision": "b2d9cf481c3b29957c67",
-    "url": "/linder/static/js/main.b2d9cf48.chunk.js"
+    "revision": "5d6778636981d18b7008",
+    "url": "/linder/static/js/main.5d677863.chunk.js"
   },
   {
     "revision": "ce93c45f9d6f9bcc1879349181901c5d",
@@ -44,7 +44,7 @@ self.__precacheManifest = [
     "url": "/linder/static/media/bg.64bdc1c6.jpg"
   },
   {
-    "revision": "e88cb3a42c23cffb855127c3e5b7787a",
+    "revision": "61fe9a73d93746a3fe0bce2fdc2ca344",
     "url": "/linder/index.html"
   }
 ];
