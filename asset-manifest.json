@@ -1,13 +1,13 @@
 {
   "main.css": "/linder/static/css/main.d671a2a9.chunk.css",
-  "main.js": "/linder/static/js/main.2e5b05c7.chunk.js",
-  "main.js.map": "/linder/static/js/main.2e5b05c7.chunk.js.map",
+  "main.js": "/linder/static/js/main.4ec311e8.chunk.js",
+  "main.js.map": "/linder/static/js/main.4ec311e8.chunk.js.map",
   "runtime~main.js": "/linder/static/js/runtime~main.6a58dcc4.js",
   "runtime~main.js.map": "/linder/static/js/runtime~main.6a58dcc4.js.map",
-  "static/js/2.de166eff.chunk.js": "/linder/static/js/2.de166eff.chunk.js",
-  "static/js/2.de166eff.chunk.js.map": "/linder/static/js/2.de166eff.chunk.js.map",
+  "static/js/2.bb0b0979.chunk.js": "/linder/static/js/2.bb0b0979.chunk.js",
+  "static/js/2.bb0b0979.chunk.js.map": "/linder/static/js/2.bb0b0979.chunk.js.map",
   "index.html": "/linder/index.html",
-  "precache-manifest.4ef170bf008910fb91d2c0351e10881e.js": "/linder/precache-manifest.4ef170bf008910fb91d2c0351e10881e.js",
+  "precache-manifest.f654ba509e805edacd5a9066be591c6e.js": "/linder/precache-manifest.f654ba509e805edacd5a9066be591c6e.js",
   "service-worker.js": "/linder/service-worker.js",
   "static/css/main.d671a2a9.chunk.css.map": "/linder/static/css/main.d671a2a9.chunk.css.map",
   "static/media/afternoon.jpg": "/linder/static/media/afternoon.13557a11.jpg",
@@ -16,5 +16,6 @@
   "static/media/emily.jpg": "/linder/static/media/emily.dce7472c.jpg",
   "static/media/midmorning.jpg": "/linder/static/media/midmorning.af6168ab.jpg",
   "static/media/morning.jpg": "/linder/static/media/morning.1cc63b5d.jpg",
-  "static/media/night.jpg": "/linder/static/media/night.5260a147.jpg"
+  "static/media/night.jpg": "/linder/static/media/night.5260a147.jpg",
+  "static/media/profile.jpg": "/linder/static/media/profile.22398947.jpg"
 }

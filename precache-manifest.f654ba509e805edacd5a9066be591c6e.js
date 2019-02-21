@@ -4,7 +4,7 @@ self.__precacheManifest = [
     "url": "/linder/static/media/afternoon.13557a11.jpg"
   },
   {
-    "revision": "2e5b05c7dc7c8ace90d0",
+    "revision": "4ec311e8b9ebe4cf9596",
     "url": "/linder/static/css/main.d671a2a9.chunk.css"
   },
   {
@@ -12,8 +12,8 @@ self.__precacheManifest = [
     "url": "/linder/static/js/runtime~main.6a58dcc4.js"
   },
   {
-    "revision": "de166eff6b9d4604ff45",
-    "url": "/linder/static/js/2.de166eff.chunk.js"
+    "revision": "bb0b097992d84e4b67c7",
+    "url": "/linder/static/js/2.bb0b0979.chunk.js"
   },
   {
     "revision": "1cc63b5d4623873331966c6a0f0b5377",
@@ -24,8 +24,8 @@ self.__precacheManifest = [
     "url": "/linder/static/media/midmorning.af6168ab.jpg"
   },
   {
-    "revision": "2e5b05c7dc7c8ace90d0",
-    "url": "/linder/static/js/main.2e5b05c7.chunk.js"
+    "revision": "4ec311e8b9ebe4cf9596",
+    "url": "/linder/static/js/main.4ec311e8.chunk.js"
   },
   {
     "revision": "ce93c45f9d6f9bcc1879349181901c5d",
@@ -40,11 +40,15 @@ self.__precacheManifest = [
     "url": "/linder/static/media/emily.dce7472c.jpg"
   },
   {
+    "revision": "2239894702dd8211588f7203ee3546c9",
+    "url": "/linder/static/media/profile.22398947.jpg"
+  },
+  {
     "revision": "64bdc1c62d42dc5ca446946fc5b27b7f",
     "url": "/linder/static/media/bg.64bdc1c6.jpg"
   },
   {
-    "revision": "1a89b0fabb14178f150ccf3f8e9fab26",
+    "revision": "4a9f5c8b0dcb999041158e564eacc8d6",
     "url": "/linder/index.html"
   }
 ];
