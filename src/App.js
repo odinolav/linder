@@ -381,7 +381,7 @@ class App extends Component {
         <Toolbar className={classes.toolbar}>
           <Typography variant="h6" color="inherit" className={classes.grow}>
             {STRINGS.title}
-            <Button color="inherit" aria-label="Project Info" className='mobile'>
+            <Button color="inherit" aria-label="Project Info" className='mobile' onClick={this.openInfoBox}>
               <Info />
             </Button>
           </Typography>
