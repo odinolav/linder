@@ -181,6 +181,7 @@ class App extends Component {
    }
 
    OkayDialogButton = () => {return <Button onClick={this.handleClose} color='primary'>Okay</Button>};
+   EmailDialogButton = () => {return <Button target='_blank' href={`mailto:${SECRET_STRINGS.targetEmail}?subject=Research Journal for ${this.state.name} ${this.getHumanDate()}`} onClick={this.handleClose} color='primary'>Email to Emily</Button>};
 
    encodeEmail = () => {
      let msg = '';
@@ -207,11 +208,11 @@ class App extends Component {
             <span key={header+timeOfDay}>
               <Typography component='span' variant='h6'>{STRINGS.headers[header]}</Typography>
               <Typography component='span' variant='body1'>{val}</Typography>
-              <br />
+              <br /><br />
             </span>);
          }
        }
-       html.push(<br key={'br'+timeOfDay} />);
+       html.push(<span key={'br'+timeOfDay}><br />————————————————————</span>);
        text += '%0A';
      }
      return {text, html};
@@ -272,12 +273,14 @@ class App extends Component {
     this.setState({
       dialogBody:
         <DialogContent>
-        <DialogContentText id='alert-dialog-slide-description'>
-          {html}
-        </DialogContentText>
-      </DialogContent>,
+          <Typography component='span' variant='body2'>Copy the following text, then submit to Emily.</Typography>
+          <br /><br />
+          <DialogContentText id='alert-dialog-slide-description'>
+            {html}
+          </DialogContentText>
+        </DialogContent>,
       popupTitle: 'Submit to Emily',
-      dialogActions: this.OkayDialogButton(),
+      dialogActions: this.EmailDialogButton(),
       open: true
     });
   }
