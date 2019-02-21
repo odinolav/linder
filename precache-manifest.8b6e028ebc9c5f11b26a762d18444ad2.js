@@ -4,7 +4,7 @@ self.__precacheManifest = [
     "url": "/linder/static/media/afternoon.13557a11.jpg"
   },
   {
-    "revision": "f3ae7a98d4ca0b5395bd",
+    "revision": "6caaf71a5ff9debf9bc4",
     "url": "/linder/static/css/main.d671a2a9.chunk.css"
   },
   {
@@ -24,8 +24,8 @@ self.__precacheManifest = [
     "url": "/linder/static/media/midmorning.af6168ab.jpg"
   },
   {
-    "revision": "f3ae7a98d4ca0b5395bd",
-    "url": "/linder/static/js/main.f3ae7a98.chunk.js"
+    "revision": "6caaf71a5ff9debf9bc4",
+    "url": "/linder/static/js/main.6caaf71a.chunk.js"
   },
   {
     "revision": "ce93c45f9d6f9bcc1879349181901c5d",
@@ -44,7 +44,7 @@ self.__precacheManifest = [
     "url": "/linder/static/media/bg.64bdc1c6.jpg"
   },
   {
-    "revision": "cbb1bec351d9a1ea9ca73c465b1b4d05",
+    "revision": "97f0e1ceedcb5c7babac53ccd5ead444",
     "url": "/linder/index.html"
   }
 ];
