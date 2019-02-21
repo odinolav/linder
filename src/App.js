@@ -38,7 +38,6 @@ import EARLYEVENING from './img/earlyevening.jpg';
 import NIGHT from './img/night.jpg';
 import EMILY from './img/emily.jpg';
 
-
 const cardImgMap = {
   'Wake Up': WAKEUP,
   'Mid-Morning': MIDMORNING,
@@ -205,13 +204,10 @@ class App extends Component {
     });
   }
 
-  handleChange = name => event => {
-    this.setState({[name]: event.target.value});
-  }
-
   handleChangeActivity = (timeOfDay, colIndex) => event => {
     let currentDaySchedule = this.state.daySchedule;
-    currentDaySchedule[timeOfDay][colIndex] = event.target.value;
+    currentDaySchedule[timeOfDay][colIndex] =
+        event.target.value.replace(/--/, '—').replace(/\(\)/, '•').replace(/:\)/, '🙂').replace(/:D/, '😃').replace(/:\(/, '😔').replace(/:o/, '😮');
     this.setState(prevState => ({
       daySchedule: currentDaySchedule
     }));
