@@ -30,7 +30,6 @@ import Tooltip from '@material-ui/core/Tooltip';
 import Avatar from '@material-ui/core/Avatar'
 import Tabs from '@material-ui/core/Tabs';
 import Tab from '@material-ui/core/Tab';
-import Paper from '@material-ui/core/Paper';
 
 import SECRET_STRINGS from './text/SecretStrings';
 import STRINGS from './text/Strings';
@@ -53,14 +52,6 @@ const cardImgMap = {
 
 function Transition(props) {
   return <Slide direction='up' {...props} />;
-}
-
-function TabContainer({ children, dir }) {
-  return (
-    <Typography component="div" dir={dir} style={{ padding: 8 * 3 }}>
-      {children}
-    </Typography>
-  );
 }
 
 const styles = theme => ({
