@@ -1,5 +1,4 @@
 import 'date-fns';
-import {format} from 'date-fns/esm'
 import React, {Component} from 'react';
 import './css/App.css';
 import { withStyles } from '@material-ui/core/styles';
@@ -30,6 +29,8 @@ import Tooltip from '@material-ui/core/Tooltip';
 import Avatar from '@material-ui/core/Avatar'
 import Tabs from '@material-ui/core/Tabs';
 import Tab from '@material-ui/core/Tab';
+
+import DateHelpers from 'helpers/DateHelpers';
 
 import SECRET_STRINGS from './text/SecretStrings';
 import STRINGS from './text/Strings';
@@ -144,13 +145,13 @@ class App extends Component {
       dialogActions: this.OkayDialogButton(),
       eventString: `https://calendar.google.com/calendar/r/eventedit?text=Journaling+for+Emily+Linder&location=Decorah,+IA&details=Make+sure+to+visit+odinolav.com/linder`,
       allDays: {},
-      currentDay: this.getDateStorageName(),
+      currentDay: DateHelpers.getDateStorageName(),
       dayIndex: 0
     }
   }
 
   componentWillMount() {
-    let today = this.getDateStorageName();
+    let today = DateHelpers.getDateStorageName();
     let name = localStorage.getItem('name');
     if (localStorage.getItem(today)) {
       this.setState({
@@ -182,7 +183,7 @@ class App extends Component {
   }
 
   saveToday = () => {
-    localStorage.setItem(this.getDateStorageName(), JSON.stringify(this.state.daySchedule));
+    localStorage.setItem(DateHelpers.getDateStorageName(), JSON.stringify(this.state.daySchedule));
   }
 
   saveAllDays = () => {
@@ -200,15 +201,6 @@ class App extends Component {
     });
    };
 
-   convertToHumanDate = (storageDate) => {
-     //today's date: format(new Date(),'MM/dd/yyyy');
-     return storageDate.substring(12).replace(/_/g, '/');
-   }
-   getDateStorageName = () => {
-     return 'daySchedule_'+format(new Date(),'MM_dd_yyyy');
-   }
-
-
    somethingExpanded = () => {
       if (this.state['Wake Up_Expanded'] || this.state['Mid-Morning_Expanded'] || this.state['Afternoon_Expanded'] ||
           this.state['Early Evening_Expanded'] || this.state['Night_Expanded']) {
@@ -218,7 +210,7 @@ class App extends Component {
    }
 
    OkayDialogButton = () => {return <Button onClick={this.handleClose} color='primary'>Okay</Button>};
-   EmailDialogButton = () => {return <Button target='_blank' href={`mailto:${SECRET_STRINGS.targetEmail}?subject=Research Journal for ${this.state.name} ${this.convertToHumanDate(this.state.currentDay)}`} onClick={this.handleClose} color='primary'>Email to Emily</Button>};
+   EmailDialogButton = () => {return <Button target='_blank' href={`mailto:${SECRET_STRINGS.targetEmail}?subject=Research Journal for ${this.state.name} ${DateHelpers.convertToHumanDate(this.state.currentDay)}`} onClick={this.handleClose} color='primary'>Email to Emily</Button>};
 
    encodeEmail = () => {
      let msg = '';
@@ -250,24 +242,6 @@ class App extends Component {
      }
      return html;
    }
-
-  getDate = () => {
-    return (new Date()).toISOString().replace(/-|:|\.\d\d\d/g,"");
-  }
-
-  convertDate = (date) => {
-    return date.toISOString().replace(/-|:|\.\d\d\d/g,"");
-  }
-
-  updateEventString = () => {
-    let title = 'Journaling+for+Emily';
-    let details = 'Remember+to+visit+linder.odinolav.com';
-    let startTime = '';
-    let endTime = ''
-    this.setState({
-      eventString: `https://calendar.google.com/calendar/r/eventedit?dates=${startTime}/${endTime}&location&text=${title}&details=${details}`
-    });
-  }
 
   handleNameChange = event => {
     let newVal = event.target.value;
@@ -448,7 +422,7 @@ class App extends Component {
             scrollButtons="auto"
           >
             {Object.keys(this.state.allDays).map((key)=> {
-              let dateLabel = key === this.getDateStorageName() ? 'Today' : this.convertToHumanDate(key);
+              let dateLabel = key === DateHelpers.getDateStorageName() ? 'Today' : DateHelpers.convertToHumanDate(key);
               return <Tab key={key} label={dateLabel} />
             })}
           </Tabs>
