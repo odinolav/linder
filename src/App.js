@@ -28,6 +28,9 @@ import Typography from '@material-ui/core/Typography';
 import classnames from 'classnames';
 import Tooltip from '@material-ui/core/Tooltip';
 import Avatar from '@material-ui/core/Avatar'
+import Tabs from '@material-ui/core/Tabs';
+import Tab from '@material-ui/core/Tab';
+import Paper from '@material-ui/core/Paper';
 
 import SECRET_STRINGS from './text/SecretStrings';
 import STRINGS from './text/Strings';
@@ -50,6 +53,14 @@ const cardImgMap = {
 
 function Transition(props) {
   return <Slide direction='up' {...props} />;
+}
+
+function TabContainer({ children, dir }) {
+  return (
+    <Typography component="div" dir={dir} style={{ padding: 8 * 3 }}>
+      {children}
+    </Typography>
+  );
 }
 
 const styles = theme => ({
@@ -109,6 +120,10 @@ const styles = theme => ({
     right: 0,
     margin: '0 auto'
   },
+  tabBar: {
+    justifyContent: 'center',
+    textAlign: 'center'
+  }
 });
 
 class App extends Component {
@@ -136,41 +151,72 @@ class App extends Component {
       name: '',
       nameComplete: false,
       dialogActions: this.OkayDialogButton(),
-      eventString: `https://calendar.google.com/calendar/r/eventedit?text=Journaling+for+Emily+Linder&location=Decorah,+IA&details=Make+sure+to+visit+odinolav.com/linder`
+      eventString: `https://calendar.google.com/calendar/r/eventedit?text=Journaling+for+Emily+Linder&location=Decorah,+IA&details=Make+sure+to+visit+odinolav.com/linder`,
+      allDays: {},
+      currentDay: this.getDateStorageName(),
+      dayIndex: 0
     }
   }
 
   componentWillMount() {
-    let today = this.getReadableDate();
-    if (localStorage['daySchedule_'+today]) {
+    let today = this.getDateStorageName();
+    let name = localStorage.getItem('name');
+    if (localStorage.getItem(today)) {
       this.setState({
-        daySchedule: JSON.parse(localStorage['daySchedule_'+today]),
-        name: localStorage.name ? localStorage.name : '',
-        nameComplete: localStorage.nameComplete
-      });
+        daySchedule: JSON.parse(localStorage.getItem(today)),
+        name: name ? name : '',
+        nameComplete: localStorage.getItem('nameComplete')
+      }, this.loadAllDays());
+    } else {
+      this.saveToday();
+      this.loadAllDays();
     }
+  }
+
+  loadAllDays = () => {
+    let all = [];
+    for (let key of Object.keys(localStorage)) {
+      if (key.substring(0,12) === 'daySchedule_') {
+        all[key] = JSON.parse(localStorage[key]);
+      }
+    }
+    this.setState({
+      allDays: all,
+      dayIndex: Object.keys(all).length-1
+    });
   }
 
   componentDidMount() {
     this.beforeUnload();
   }
 
+  saveToday = () => {
+    localStorage.setItem(this.getDateStorageName(), JSON.stringify(this.state.daySchedule));
+  }
+
+  saveAllDays = () => {
+    Object.keys(this.state.allDays).forEach((key)=> {
+      localStorage.setItem(key, JSON.stringify(this.state.allDays[key]));
+    });
+  }
+
   beforeUnload = () => {
-    let today = this.getReadableDate();
     window.addEventListener("beforeunload", (ev) => {
        ev.preventDefault();
-       localStorage['daySchedule_'+today] = JSON.stringify(this.state.daySchedule);
-       localStorage['name'] = this.state.name;
-       localStorage['nameComplete'] = this.state.nameComplete;
+       this.saveAllDays();
+       localStorage.setItem('name', this.state.name);
+       localStorage.setItem('nameComplete', this.state.nameComplete);
     });
    };
 
-   getHumanDate = () => {
-     return format(new Date(),'MM/dd/yyyy');
+   convertToHumanDate = (storageDate) => {
+     //today's date: format(new Date(),'MM/dd/yyyy');
+     return storageDate.substring(12).replace(/_/g, '/');
    }
-   getReadableDate = () => {
-     return format(new Date(),'MM_dd_yyyy');
+   getDateStorageName = () => {
+     return 'daySchedule_'+format(new Date(),'MM_dd_yyyy');
    }
+
 
    somethingExpanded = () => {
       if (this.state['Wake Up_Expanded'] || this.state['Mid-Morning_Expanded'] || this.state['Afternoon_Expanded'] ||
@@ -181,7 +227,7 @@ class App extends Component {
    }
 
    OkayDialogButton = () => {return <Button onClick={this.handleClose} color='primary'>Okay</Button>};
-   EmailDialogButton = () => {return <Button target='_blank' href={`mailto:${SECRET_STRINGS.targetEmail}?subject=Research Journal for ${this.state.name} ${this.getHumanDate()}`} onClick={this.handleClose} color='primary'>Email to Emily</Button>};
+   EmailDialogButton = () => {return <Button target='_blank' href={`mailto:${SECRET_STRINGS.targetEmail}?subject=Research Journal for ${this.state.name} ${this.convertToHumanDate(this.state.currentDay)}`} onClick={this.handleClose} color='primary'>Email to Emily</Button>};
 
    encodeEmail = () => {
      let msg = '';
@@ -196,14 +242,11 @@ class App extends Component {
    }
 
    makeEmailMessage = () => {
-     let text = '';
      let html = [];
      for (let [timeOfDay, responseObj] of Object.entries(this.state.daySchedule)) {
-       text += timeOfDay + '%0A';
        html.push(<Typography key={timeOfDay} component='span' variant='h5'>{timeOfDay}</Typography>);
        for (let [header, val] of Object.entries(responseObj)) {
          if (val) {
-           text += `   ${STRINGS.headers[header]}%0A      ${val}%0A`;
            html.push(
             <span key={header+timeOfDay}>
               <Typography component='span' variant='h6'>{STRINGS.headers[header]}</Typography>
@@ -213,9 +256,8 @@ class App extends Component {
          }
        }
        html.push(<span key={'br'+timeOfDay}><br />————————————————————</span>);
-       text += '%0A';
      }
-     return {text, html};
+     return html;
    }
 
   getDate = () => {
@@ -244,7 +286,7 @@ class App extends Component {
   handleChangeActivity = (timeOfDay, colIndex) => event => {
     let currentDaySchedule = this.state.daySchedule;
     currentDaySchedule[timeOfDay][colIndex] =
-        event.target.value.replace(/--/, '—').replace(/\(\)/, '•').replace(/:\)/, '🙂').replace(/:D/, '😃').replace(/:\(/, '😔').replace(/:o/, '😮');
+        event.target.value.replace(/--/g, '—').replace(/\(\)/g, '•').replace(/:\)/g, '🙂').replace(/:D/g, '😃').replace(/:\(/g, '😔').replace(/:o/g, '😮');
 
     this.setState({
       daySchedule: currentDaySchedule
@@ -260,16 +302,19 @@ class App extends Component {
   };
 
   showInputDescription = (title, desc) => event => {
-    this.setState({
-      dialogBody: <DialogContent><DialogContentText id='alert-dialog-slide-description'>{desc}</DialogContentText></DialogContent>,
-      popupTitle: title,
-      dialogActions: this.OkayDialogButton(),
-      open: true
-    });
+    if (event.type === 'contextmenu') {
+      event.preventDefault();
+      this.setState({
+        dialogBody: <DialogContent><DialogContentText id='alert-dialog-slide-description'>{desc}</DialogContentText></DialogContent>,
+        popupTitle: title,
+        dialogActions: this.OkayDialogButton(),
+        open: true
+      });
+    }
   }
 
   showMailForm = () => {
-    let {text, html} = this.makeEmailMessage();
+    let html = this.makeEmailMessage();
     this.setState({
       dialogBody:
         <DialogContent>
@@ -332,19 +377,29 @@ class App extends Component {
       margin='normal'
       helperText=''
       variant='outlined'
-      onDoubleClick={this.showInputDescription(header, STRINGS.headerDescriptions[i])}
+      onClick={this.showInputDescription(header, STRINGS.headerDescriptions[i])}
     />
   }
+
+  handleTabChange = (event, value) => {
+    this.setState(prevState => ({
+      dayIndex: value,
+      currentDay: Object.keys(prevState.allDays)[value],
+      allDays: Object.assign(prevState.allDays, {[prevState.currentDay]: this.state.daySchedule}),
+      daySchedule: prevState.allDays[Object.keys(prevState.allDays)[value]]
+    }));
+  };
 
   render() {
     const isMobile = window.innerWidth < 600;
     const { classes } = this.props;
-    const ds = this.state.daySchedule;
+    const di = this.state.dayIndex;
+    const currentDs = this.state.allDays[Object.keys(this.state.allDays)[di]];
     let cardClass;
     let mainCards = [];
-    for (let [timeOfDay, rowValue] of Object.entries(ds)) {
+    for (let [timeOfDay, rowValue] of Object.entries(currentDs)) {
       let expanded = timeOfDay+'_Expanded';
-      let complete = ds[timeOfDay][0] && ds[timeOfDay][1];
+      let complete = currentDs[timeOfDay][0] && currentDs[timeOfDay][1];
       if (this.state[expanded] && isMobile) {
         cardClass = classes.expandedPhoneCard;
       } else if (this.state[expanded]) {
@@ -389,9 +444,25 @@ class App extends Component {
         </Card>
       );
     };
-    // old fab href: href={`mailto:${SECRET_STRINGS.targetEmail}?subject=Research Journal for ${this.state.name} ${this.getHumanDate()}&body=${this.encodeEmail()}`}
+
     return (<div id='app'>
     <div id='mainarea'>
+      <AppBar id="tabbar" position="absolute" color="default">
+          <Tabs
+            value={this.state.dayIndex}
+            onChange={this.handleTabChange}
+            indicatorColor="primary"
+            textColor="primary"
+            variant="scrollable"
+            scrollButtons="auto"
+          >
+            {Object.keys(this.state.allDays).map((key)=> {
+              let dateLabel = key === this.getDateStorageName() ? 'Today' : this.convertToHumanDate(key);
+              return <Tab key={key} label={dateLabel} />
+            })}
+          </Tabs>
+        </AppBar>
+
       <Dialog
           open={this.state.open}
           TransitionComponent={Transition}
@@ -408,8 +479,8 @@ class App extends Component {
         {this.state.dialogActions}
       </Dialog>
 
-      <form className={classes.container} noValidate='noValidate'>
-        <Grid container className={classes.root} justify='center' alignItems='center'>
+
+        <Grid container className='maingrid' justify='center' alignItems='center'>
 
           <Card className={isMobile ? classes.phoneCard : classes.card} key='k.1'>
             <CardActionArea onClick={()=>this.handleExpandClick('Name')}>
@@ -458,8 +529,8 @@ class App extends Component {
 
           {mainCards}
         </Grid>
-      </form>
     </div>
+
 
       <AppBar color="primary"
               className={(isMobile && this.somethingExpanded()) ? classes.bottomAppBar : classes.appBar}
