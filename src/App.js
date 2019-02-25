@@ -103,8 +103,6 @@ class App extends Component {
     if (localStorage.getItem(today)) {
       this.setState({
         daySchedule: JSON.parse(localStorage.getItem(today)),
-        name: name ? name : '',
-        nameComplete: localStorage.getItem('nameComplete')
       }, this.loadAllDays());
     } else {
       this.saveToday();
@@ -140,6 +138,8 @@ class App extends Component {
   }
 
   loadAllDays = () => {
+    let potentialName = localStorage.getItem('name');
+    let nameValid = this.checkNameValid(potentialName);
     let all = [];
     for (let key of Object.keys(localStorage)) {
       if (key.substring(0,12) === 'daySchedule_') {
@@ -148,6 +148,8 @@ class App extends Component {
     }
     let currentDayIndex = Object.keys(all).length-1;
     this.setState({
+      name: potentialName ? potentialName : '',
+      nameComplete: nameValid,
       allDays: all,
       dayIndex: currentDayIndex
     });
@@ -176,9 +178,13 @@ class App extends Component {
     });
    };
 
+   checkNameValid = (name) => {
+     return (name.length > 4 && name.trim().split(' ').length > 1);
+   }
+
   handleNameChange = event => {
     let newVal = event.target.value;
-    this.setState({name: newVal, nameComplete: (newVal.length > 4 && newVal.trim().split(' ').length > 1)});
+    this.setState({name: newVal, nameComplete: this.checkNameValid(newVal)});
   }
 
   handleChangeActivity = (timeOfDay, colIndex) => event => {
