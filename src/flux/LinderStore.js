@@ -23,23 +23,17 @@ class LinderStore extends EventEmitter {
     this['Afternoon_Expanded'] = false;
     this['Early Evening_Expanded'] = false;
     this['Night_Expanded'] = false;
-    this.daySchedule = {
-      'Wake Up': {1:'',2:'',3:''},
-      'Mid-Morning': {1:'',2:'',3:''},
-      'Afternoon': {1:'',2:'',3:''},
-      'Early Evening': {1:'',2:'',3:''},
-      'Night': {1:'',2:'',3:''},
-    }
+    this.allDays = {};
   }
 
-  updateDaySchedule(newDaySchedule) {
-    this.daySchedule = newDaySchedule;
-    this.makeEmailMessage();
-    this.emit(':RECEIVED_DAY_SCHEDULE');
+  getInputText = (dayKey, timeOfDay, colIndex) => {
+    return this.allDays[dayKey][timeOfDay][colIndex];
   }
 
-  getDaySchedule() {
-    this.emit(':GET_DAY_SCHEDULE');
+  updateInputText = (newDesc, dayKey, timeOfDay, colIndex) => {
+    this.allDays[dayKey][timeOfDay][colIndex] =
+        newDesc.replace(/--/g, '—').replace(/\(\)/g, '•').replace(/:\)/g, '🙂').replace(/:D/g, '😃').replace(/:\(/g, '😔').replace(/:o/g, '😮');
+    this.emit(':UPDATE_DAY_SCHEDULE');
   }
 
   setCurrentDay = (newDay) => {

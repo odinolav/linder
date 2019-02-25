@@ -23,6 +23,7 @@ import Tab from '@material-ui/core/Tab';
 import DateHelpers from 'helpers/DateHelpers';
 
 import LinderAppBar from 'components/LinderAppBar';
+import LinderInput from 'components/LinderInput';
 
 import linderStore from 'flux/LinderStore';
 
@@ -81,49 +82,42 @@ class App extends Component {
     super();
     //let now = new Date();
     this.state = {
-      daySchedule: {
-        'Wake Up': {1:'',2:'',3:''},
-        'Mid-Morning': {1:'',2:'',3:''},
-        'Afternoon': {1:'',2:'',3:''},
-        'Early Evening': {1:'',2:'',3:''},
-        'Night': {1:'',2:'',3:''},
-      },
       popup: '',
       name: '',
       nameComplete: false,
-      allDays: {},
       dayIndex: 0,
       currentDay: DateHelpers.getDateStorageName()
     }
+
+    this.daySchedule = {
+      'Wake Up': {1:'',2:'',3:''},
+      'Mid-Morning': {1:'',2:'',3:''},
+      'Afternoon': {1:'',2:'',3:''},
+      'Early Evening': {1:'',2:'',3:''},
+      'Night': {1:'',2:'',3:''},
+    };
   }
 
   componentWillMount() {
     let today = DateHelpers.getDateStorageName();
-    let name = localStorage.getItem('name');
     if (localStorage.getItem(today)) {
       this.setState({
         daySchedule: JSON.parse(localStorage.getItem(today)),
       }, this.loadAllDays());
     } else {
-      this.saveToday();
+      this.saveEmptyToday();
       this.loadAllDays();
     }
 
     linderStore.on(':OPEN_POPUP', this.handleOpen)
     .on(':CLOSE_POPUP', this.handleClose)
-    .on(':CARD_EXPAND_TOGGLE', this.toggleExpandCard)
-    .on(':GET_DAY_SCHEDULE', this.sendDaySchedule);
+    .on(':CARD_EXPAND_TOGGLE', this.toggleExpandCard);
   }
 
   componentWillUnmount() {
     linderStore.removeListener(':OPEN_POPUP', this.handleOpen)
     .removeListener(':CLOSE_POPUP', this.handleClose)
-    .removeListener(':CARD_EXPAND_TOGGLE', this.toggleExpandCard)
-    .removeListeneron(':GET_DAY_SCHEDULE', this.sendDaySchedule);
-  }
-
-  sendDaySchedule = () => {
-    linderStore.updateDaySchedule(this.state.daySchedule);
+    .removeListener(':CARD_EXPAND_TOGGLE', this.toggleExpandCard);
   }
 
   toggleExpandCard = () => {
@@ -148,10 +142,10 @@ class App extends Component {
     }
     // Precondition: 'all' will have a length of at least 1
     let currentDayIndex = Object.keys(all).length-1;
+    linderStore.allDays = all;
     this.setState({
       name: potentialName ? potentialName : '',
-      nameComplete: nameValid,
-      allDays: all
+      nameComplete: nameValid
     }, ()=>{this.handleTabChange(null, currentDayIndex)});
   }
 
@@ -159,13 +153,13 @@ class App extends Component {
     this.beforeUnload();
   }
 
-  saveToday = () => {
-    localStorage.setItem(DateHelpers.getDateStorageName(), JSON.stringify(this.state.daySchedule));
+  saveEmptyToday = () => {
+    localStorage.setItem(DateHelpers.getDateStorageName(), JSON.stringify(this.daySchedule));
   }
 
   saveAllDays = () => {
-    Object.keys(this.state.allDays).forEach((key)=> {
-      localStorage.setItem(key, JSON.stringify(this.state.allDays[key]));
+    Object.keys(linderStore.allDays).forEach((key)=> {
+      localStorage.setItem(key, JSON.stringify(linderStore.allDays[key]));
     });
   }
 
@@ -187,15 +181,6 @@ class App extends Component {
     this.setState({name: newVal, nameComplete: this.checkNameValid(newVal)});
   }
 
-  handleChangeActivity = (timeOfDay, colIndex) => event => {
-    let currentDaySchedule = this.state.daySchedule;
-    currentDaySchedule[timeOfDay][colIndex] =
-        event.target.value.replace(/--/g, '—').replace(/\(\)/g, '•').replace(/:\)/g, '🙂').replace(/:D/g, '😃').replace(/:\(/g, '😔').replace(/:o/g, '😮');
-    this.setState({
-      daySchedule: currentDaySchedule
-    });
-  }
-
   handleOpen = () => {
     this.setState({ popup: linderStore.popup });
   }
@@ -203,36 +188,17 @@ class App extends Component {
     this.setState({ popup: '' });
   }
 
-  LinderInput = (header, timeOfDay, i, classes, text) => {
-    return <TextField
-      key={`in-${timeOfDay}-${header}-${i}`}
-      id='outlined-controlled'
-      label={header}
-      multiline
-      rowsMax='20'
-      fullWidth
-      value={text}
-      placeholder={STRINGS.headerAlternates[i]}
-      onChange={this.handleChangeActivity(timeOfDay, i)}
-      margin='normal'
-      helperText=''
-      variant='outlined'
-    />
-  }
-
   handleTabChange = (event, value) => {
     this.setState(prevState => ({
       dayIndex: value,
-      currentDay: Object.keys(prevState.allDays)[value],
-      allDays: Object.assign(prevState.allDays, {[prevState.currentDay]: this.state.daySchedule}),
-      daySchedule: prevState.allDays[Object.keys(prevState.allDays)[value]]
+      currentDay: Object.keys(linderStore.allDays)[value]
     }));
   };
 
   render() {
     const isMobile = window.innerWidth < 600;
     const { classes } = this.props;
-    const currentDs = this.state.allDays[this.state.currentDay];
+    const currentDs = linderStore.allDays[this.state.currentDay];
     let cardClass;
     let mainCards = [];
     for (let [timeOfDay, rowValue] of Object.entries(currentDs)) {
@@ -275,7 +241,11 @@ class App extends Component {
           <Collapse in={this.state[expanded]} timeout="auto" unmountOnExit>
           <CardContent>
             {STRINGS.headers.map((header, i) => {
-              return this.LinderInput(header, timeOfDay, i, classes.textField, rowValue[i])
+              return <LinderInput
+                        key={`in-${this.state.dayIndex}-${timeOfDay}-${header}-${i}`}
+                        text={linderStore.getInputText(this.state.currentDay, timeOfDay, i)}
+                        dayName={this.state.currentDay} headerIndex={i} timeOfDay={timeOfDay} header={header}
+                      />
             })}
           </CardContent>
         </Collapse>
@@ -294,7 +264,7 @@ class App extends Component {
             variant="scrollable"
             scrollButtons="auto"
           >
-            {Object.keys(this.state.allDays).map((key)=> {
+            {Object.keys(linderStore.allDays).map((key)=> {
               let dateLabel = key === DateHelpers.getDateStorageName() ? 'Today' : DateHelpers.convertToHumanDate(key);
               return <Tab key={key} label={dateLabel} />
             })}
