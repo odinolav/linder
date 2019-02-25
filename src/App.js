@@ -146,13 +146,13 @@ class App extends Component {
         all[key] = JSON.parse(localStorage[key]);
       }
     }
+    // Precondition: 'all' will have a length of at least 1
     let currentDayIndex = Object.keys(all).length-1;
     this.setState({
       name: potentialName ? potentialName : '',
       nameComplete: nameValid,
-      allDays: all,
-      dayIndex: currentDayIndex
-    });
+      allDays: all
+    }, ()=>{this.handleTabChange(null, currentDayIndex)});
   }
 
   componentDidMount() {
@@ -197,11 +197,9 @@ class App extends Component {
   }
 
   handleOpen = () => {
-    console.log('open', linderStore.popup);
     this.setState({ popup: linderStore.popup });
   }
   handleClose = () => {
-    console.log('close');
     this.setState({ popup: '' });
   }
 
