@@ -20,7 +20,6 @@ class App extends Component {
 
   constructor() {
     super();
-    //let now = new Date();
     this.state = {
       popup: '',
       name: '',
@@ -54,12 +53,6 @@ class App extends Component {
     .on(':CLOSE_POPUP', this.handleClose);
   }
 
-  componentDidMount = () => {
-    if (!localStorage.getItem('name')) {
-      linderStore.openNameBox();
-    }
-  }
-
   componentWillUnmount() {
     linderStore.removeListener(':OPEN_POPUP', this.handleOpen)
     .removeListener(':CLOSE_POPUP', this.handleClose)
@@ -83,6 +76,9 @@ class App extends Component {
 
   componentDidMount() {
     this.beforeUnload();
+    if (!localStorage.getItem('name')) {
+      linderStore.openNameBox();
+    }
   }
 
   saveEmptyToday = () => {
