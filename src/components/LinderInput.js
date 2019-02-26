@@ -13,7 +13,7 @@ export default class LinderInput extends Component {
     this.header = props.header;
     this.state = {
       dayName: props.dayName,
-      value: linderStore.getInputText(props.dayName, this.timeOfDay, this.headerIndex)
+      value: linderStore.getInputText(props.dayName, this.timeOfDay, this.headerIndex) || ''
     }
   }
 
@@ -27,9 +27,11 @@ export default class LinderInput extends Component {
 
   updateDay = () => {
     let currentDay = linderStore.currentDay;
+    let currentValue = linderStore.getInputText(currentDay, this.timeOfDay, this.headerIndex);
+    console.log(this.timeOfDay, this.headerIndex, currentValue);
     this.setState({
       dayName: currentDay,
-      value: linderStore.getInputText(currentDay, this.timeOfDay, this.headerIndex)
+      value: currentValue || '' // Protect against phantom values caused by null values
     });
   }
 
