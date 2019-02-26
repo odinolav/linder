@@ -18,17 +18,18 @@ export default class LinderInput extends Component {
   }
 
   componentWillMount = () => {
-    linderStore.on(':SWITCH_DAY', this.updateDay);
+    linderStore.on(':SWITCH_DAY', this.updateDay)
+    .on(':UPDATE_CARDS_EXPANDED', this.updateDay);
   }
 
   componentWillUnmount = () => {
-    linderStore.removeListener(':SWITCH_DAY', this.updateDay);
+    linderStore.removeListener(':SWITCH_DAY', this.updateDay)
+    .removeListener(':UPDATE_CARDS_EXPANDED', this.updateDay);
   }
 
   updateDay = () => {
     let currentDay = linderStore.currentDay;
     let currentValue = linderStore.getInputText(currentDay, this.timeOfDay, this.headerIndex);
-    console.log(this.timeOfDay, this.headerIndex, currentValue);
     this.setState({
       dayName: currentDay,
       value: currentValue || '' // Protect against phantom values caused by null values
