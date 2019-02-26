@@ -81,27 +81,28 @@ class DayPartCard extends Component {
 
   componentWillMount = () => {
     linderStore.on(':UPDATE_DAY_SCHEDULE', this.checkComplete)
-    .on('SWITCH_DAY', this.updateDay);
+    .on(':SWITCH_DAY', this.updateDay);
   }
 
   componentWillUnmount = () => {
     linderStore.removeListener(':UPDATE_DAY_SCHEDULE', this.checkComplete)
-    .removeListener('SWITCH_DAY', this.updateDay);
+    .removeListener(':SWITCH_DAY', this.updateDay);
   }
 
   updateDay = () => {
-    this.setState({currentDay: linderStore.currentDay});
+    this.setState({currentDay: linderStore.currentDay}, this.checkComplete);
   }
 
   checkComplete = () => {
-    let newComplete = linderStore.allDays[this.state.currentDay][this.timeOfDay][0] && linderStore.allDays[this.state.currentDay][this.timeOfDay][1];
+    let newComplete = linderStore.allDays[this.state.currentDay][this.timeOfDay][0]
+                      && linderStore.allDays[this.state.currentDay][this.timeOfDay][1];
     this.setState({complete: newComplete});
   }
 
   handleExpandClick = () => {
-    const expanded = !this.state.expanded;
-    linderStore.updateExpanded(expanded ? 1 : -1);
-    this.setState(prevState => ({expanded: expanded}));
+    const newExpanded = !this.state.expanded;
+    linderStore.updateExpanded(newExpanded ? 1 : -1);
+    this.setState({expanded: newExpanded});
   }
 
   render() {
