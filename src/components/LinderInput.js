@@ -10,33 +10,51 @@ export default class LinderInput extends Component {
     super(props);
     this.timeOfDay = props.timeOfDay;
     this.headerIndex = props.headerIndex;
-    this.dayName = props.dayName;
     this.header = props.header;
     this.state = {
-      text: props.text
+      dayName: props.dayName,
+      value: linderStore.getInputText(props.dayName, this.timeOfDay, this.headerIndex)
     }
+  }
+
+  componentWillMount = () => {
+    linderStore.on(':SWITCH_DAY', this.updateDay);
+  }
+
+  componentWillUnmount = () => {
+    linderStore.removeListener(':SWITCH_DAY', this.updateDay);
+  }
+
+  updateDay = () => {
+    let currentDay = linderStore.currentDay;
+    this.setState({
+      dayName: currentDay,
+      value: linderStore.getInputText(currentDay, this.timeOfDay, this.headerIndex)
+    });
   }
 
   handleChange = event => {
     let newText = event.target.value;
-    linderStore.updateInputText(newText, this.dayName, this.timeOfDay, this.headerIndex);
-    this.setState({text: newText});
+    newText = newText.replace(/--/g, '—').replace(/\(\)/g, '•').replace(/:\)/g, '🙂')
+                     .replace(/:D/g, '😃').replace(/:\(/g, '😔').replace(/:o/g, '😮');
+    linderStore.updateInputText(newText, this.state.dayName, this.timeOfDay, this.headerIndex);
+    this.setState({value: newText});
   }
 
   render() {
-
-    return <TextField
-      id='outlined-controlled'
-      label={this.header}
-      multiline
-      rowsMax='20'
-      fullWidth
-      value={this.state.text}
-      placeholder={STRINGS.headerAlternates[this.headerIndex]}
-      onChange={this.handleChange}
-      margin='normal'
-      helperText=''
-      variant='outlined'
-    />
+    return (
+      <TextField
+        id='outlined-controlled'
+        label={this.header}
+        multiline
+        rowsMax='20'
+        fullWidth
+        value={this.state.value}
+        placeholder={STRINGS.headerAlternates[this.headerIndex]}
+        onChange={this.handleChange}
+        margin='normal'
+        helperText=''
+        variant='outlined'
+      />)
   }
 }

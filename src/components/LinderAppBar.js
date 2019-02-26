@@ -47,8 +47,17 @@ class LinderAppBar extends Component {
     super();
 
     this.state = {
+      somethingExpanded: false,
       eventString: `https://calendar.google.com/calendar/r/eventedit?text=Journaling+for+Emily+Linder&location=Decorah,+IA&details=Make+sure+to+visit+linder.odinolav.com`
     }
+  }
+
+  componentWillMount = () => {
+    linderStore.on(':UPDATE_CARDS_EXPANDED', this.updateSomethingExpanded);
+  }
+
+  updateSomethingExpanded = () => {
+    this.setState({somethingExpanded: linderStore.cardsExpanded});
   }
 
   render() {
@@ -57,7 +66,7 @@ class LinderAppBar extends Component {
     const {classes} = this.props;
 
     return <AppBar color="primary" className={(
-        isMobile && this.somethingExpanded())
+        isMobile && this.state.somethingExpanded)
         ? classes.bottomAppBar
         : classes.appBar}>
       <Toolbar className={classes.toolbar}>

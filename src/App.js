@@ -1,8 +1,8 @@
 import 'date-fns';
 import React, {Component} from 'react';
-import './css/App.css';
+import 'css/App.css';
 import { withStyles } from '@material-ui/core/styles';
-import withRoot from './withRoot';
+import withRoot from 'withRoot';
 import Grid from '@material-ui/core/Grid';
 import TextField from '@material-ui/core/TextField';
 import { Edit } from '@material-ui/icons';
@@ -23,58 +23,16 @@ import Tab from '@material-ui/core/Tab';
 import DateHelpers from 'helpers/DateHelpers';
 
 import LinderAppBar from 'components/LinderAppBar';
-import LinderInput from 'components/LinderInput';
+import DayPartCard from 'components/DayPartCard';
 
 import linderStore from 'flux/LinderStore';
 
-import STRINGS from './text/Strings';
-import WAKEUP from './img/morning.jpg';
-import MIDMORNING from './img/midmorning.jpg';
-import AFTERNOON from './img/afternoon.jpg';
-import EARLYEVENING from './img/earlyevening.jpg';
-import NIGHT from './img/night.jpg';
 import PROFILE from './img/profile.jpg';
 
 const cardImgMap = {
-  'Wake Up': WAKEUP,
-  'Mid-Morning': MIDMORNING,
-  'Afternoon': AFTERNOON,
-  'Early Evening': EARLYEVENING,
-  'Night': NIGHT,
   'Name': PROFILE
 }
 
-const styles = theme => ({
-  card: {
-    width: 180,
-    margin: 8
-  },
-  expandedCard: {
-    width: 350,
-    margin: 4
-  },
-  phoneCard: {
-    width: 150,
-    margin: 8
-  },
-  expandedPhoneCard: {
-    width: '99%',
-    margin: 0
-  },
-  media: {
-    height: 120,
-  },
-  expand: {
-    transform: 'rotate(0deg)',
-    marginLeft: 'auto',
-    transition: theme.transitions.create('transform', {
-      duration: theme.transitions.duration.shortest,
-    }),
-  },
-  expandOpen: {
-    transform: 'rotate(-90deg)',
-  }
-});
 
 class App extends Component {
 
@@ -86,7 +44,8 @@ class App extends Component {
       name: '',
       nameComplete: false,
       dayIndex: 0,
-      currentDay: DateHelpers.getDateStorageName()
+      currentDay: DateHelpers.getDateStorageName(),
+      currentDaySchedule: Object.assign({}, this.daySchedule)
     }
 
     this.daySchedule = {
@@ -122,12 +81,7 @@ class App extends Component {
 
   toggleExpandCard = () => {
     this.setState({
-      'Name_Expanded': linderStore['Name_Expanded'],
-      'Wake Up_Expanded': linderStore['Wake Up_Expanded'],
-      'Mid-Morning_Expanded': linderStore['Mid-Morning_Expanded'],
-      'Afternoon_Expanded': linderStore['Afternoon_Expanded'],
-      'Early Evening_Expanded': linderStore['Early Evening_Expanded'],
-      'Night_Expanded': linderStore['Night_Expanded'],
+      'Name_Expanded': linderStore['Name_Expanded']
     });
   }
 
@@ -189,67 +143,27 @@ class App extends Component {
   }
 
   handleTabChange = (event, value) => {
-    this.setState(prevState => ({
+    let _currentDay = Object.keys(linderStore.allDays)[value];
+    linderStore.switchDay(_currentDay);
+    this.setState({
       dayIndex: value,
-      currentDay: Object.keys(linderStore.allDays)[value]
-    }));
+      currentDay: _currentDay
+    });
   };
 
   render() {
     const isMobile = window.innerWidth < 600;
     const { classes } = this.props;
-    const currentDs = linderStore.allDays[this.state.currentDay];
-    let cardClass;
+    const currentDS = linderStore.allDays[this.state.currentDay];
     let mainCards = [];
-    for (let [timeOfDay, rowValue] of Object.entries(currentDs)) {
-      let expanded = timeOfDay+'_Expanded';
-      let complete = currentDs[timeOfDay][0] && currentDs[timeOfDay][1];
-      if (this.state[expanded] && isMobile) {
-        cardClass = classes.expandedPhoneCard;
-      } else if (this.state[expanded]) {
-        cardClass = classes.expandedCard;
-      } else if (isMobile) {
-        cardClass = classes.phoneCard;
-      } else {
-        cardClass = classes.card;
-      }
+    for (let timeOfDay of Object.keys(currentDS)) {
       mainCards.push(
-        <Card className={cardClass} key={`c-${timeOfDay}`}>
-          <CardActionArea onClick={()=>linderStore.toggleExpandCard(timeOfDay)}>
-            <CardMedia
-              className={classes.media}
-              image={cardImgMap[timeOfDay]}
-              title={timeOfDay}
-            />
-            <CardContent>
-              <Typography gutterBottom variant={isMobile ? "h6": "h5"} component="h2">{timeOfDay}</Typography>
-            </CardContent>
-          </CardActionArea>
-          <CardActions>
-            <Chip color={complete ? 'primary' : 'secondary'} label={complete ? 'Ready' : 'Incomplete'}/>
-            <IconButton
-              className={classnames(classes.expand, {
-                [classes.expandOpen]: this.state[expanded],
-              })}
-              onClick={()=>linderStore.toggleExpandCard(timeOfDay)}
-              aria-expanded={this.state[expanded]}
-              aria-label="Show more"
-            >
-              <Edit />
-            </IconButton>
-          </CardActions>
-          <Collapse in={this.state[expanded]} timeout="auto" unmountOnExit>
-          <CardContent>
-            {STRINGS.headers.map((header, i) => {
-              return <LinderInput
-                        key={`in-${this.state.dayIndex}-${timeOfDay}-${header}-${i}`}
-                        text={linderStore.getInputText(this.state.currentDay, timeOfDay, i)}
-                        dayName={this.state.currentDay} headerIndex={i} timeOfDay={timeOfDay} header={header}
-                      />
-            })}
-          </CardContent>
-        </Collapse>
-        </Card>
+        <DayPartCard key={`c-${timeOfDay}`}
+          currentDay={this.state.currentDay}
+          dayIndex={this.state.dayIndex}
+          timeOfDay={timeOfDay}
+          isMobile={isMobile}
+        />
       );
     };
 
@@ -327,4 +241,4 @@ class App extends Component {
   </div>);}
 }
 
-export default withRoot(withStyles(styles)(App));
+export default withRoot(withStyles(null)(App));

@@ -18,12 +18,16 @@ class LinderStore extends EventEmitter {
     this.currentDay = DateHelpers.getDateStorageName();
     this.name = '';
     this['Name_Expanded'] = false;
-    this['Wake Up_Expanded'] = false;
-    this['Mid-Morning_Expanded'] = false;
-    this['Afternoon_Expanded'] = false;
-    this['Early Evening_Expanded'] = false;
-    this['Night_Expanded'] = false;
+    this.numCardsExpanded = 0;
+    this.cardsExpanded = false;
     this.allDays = {};
+  }
+
+  updateExpanded = (num) => {
+    // num is 1 when a card is opened and -1 when closed
+    this.numCardsExpanded = this.numCardsExpanded + num;
+    this.cardsExpanded = this.numCardsExpanded > 0;
+    this.emit(':UPDATE_CARDS_EXPANDED');
   }
 
   getInputText = (dayKey, timeOfDay, colIndex) => {
@@ -31,13 +35,13 @@ class LinderStore extends EventEmitter {
   }
 
   updateInputText = (newDesc, dayKey, timeOfDay, colIndex) => {
-    this.allDays[dayKey][timeOfDay][colIndex] =
-        newDesc.replace(/--/g, '—').replace(/\(\)/g, '•').replace(/:\)/g, '🙂').replace(/:D/g, '😃').replace(/:\(/g, '😔').replace(/:o/g, '😮');
+    this.allDays[dayKey][timeOfDay][colIndex] = newDesc;
     this.emit(':UPDATE_DAY_SCHEDULE');
   }
 
-  setCurrentDay = (newDay) => {
+  switchDay = (newDay) => {
     this.currentDay = newDay;
+    this.emit(':SWITCH_DAY');
   }
 
   makeEmailMessage = () => {
@@ -79,17 +83,8 @@ class LinderStore extends EventEmitter {
   }
 
 
-  toggleExpandCard = (timeOfDay) => {
-    let name = timeOfDay+'_Expanded';
-    this[name] = !this[name];
-    this.emit(':CARD_EXPAND_TOGGLE');
-  };
   somethingExpanded = () => {
-     if (this['Wake Up_Expanded'] || this['Mid-Morning_Expanded'] || this['Afternoon_Expanded'] ||
-         this['Early Evening_Expanded'] || this['Night_Expanded']) {
-       return true;
-     }
-     return false;
+     return this.numExpanded > 0;
   }
 
 }
