@@ -46,7 +46,7 @@ class LinderStore extends EventEmitter {
 
   makeEmailMessage = () => {
     let html = [];
-    for (let [timeOfDay, responseObj] of Object.entries(this.daySchedule)) {
+    for (let [timeOfDay, responseObj] of Object.entries(this.allDays[this.currentDay])) {
       html.push(<Typography key={timeOfDay} component='span' variant='h5'>{timeOfDay}</Typography>);
       for (let [header, val] of Object.entries(responseObj)) {
         if (val) {
@@ -71,7 +71,7 @@ class LinderStore extends EventEmitter {
 
   openEmailBox = () => {
     this.popup = <PopupMailForm />;
-    this.openPopup()
+    this.openPopup();
   }
   openDisclaimerBox = () => {
     this.popup = <PopupDisclaimer />;

@@ -16,14 +16,17 @@ export default class Popup_Disclaimer extends Popup {
     linderStore.makeEmailMessage();
     let mailUrl = `mailto:${SECRET_STRINGS.targetEmail}?subject=Research Journal for ${linderStore.name} ${DateHelpers.convertToHumanDate(linderStore.currentDay)}`;
 
-    this.body =
-      <DialogContent>
-        <DialogContentText>Copy the following text, then submit to Emily.</DialogContentText>
-        <br/><br/>
-        <DialogContentText id='alert-dialog-slide-description'>
-          {linderStore.html}
-        </DialogContentText>
-      </DialogContent>;
+    this.state = {
+      open: true,
+      body:
+        <DialogContent>
+          <DialogContentText>Copy the following text, then submit to Emily.</DialogContentText>
+          <br/><br/>
+          <DialogContentText id='alert-dialog-slide-description'>
+            {linderStore.html}
+          </DialogContentText>
+        </DialogContent>
+    }
 
     this.title = 'Submit to Emily';
 
@@ -35,5 +38,18 @@ export default class Popup_Disclaimer extends Popup {
       </Button>;
   }
 
+  handleOpen = () => {
+    linderStore.makeEmailMessage();
+    this.setState({
+      body: <DialogContent>
+        <DialogContentText>Copy the following text, then submit to Emily.</DialogContentText>
+        <br/><br/>
+        <DialogContentText id='alert-dialog-slide-description'>
+          {linderStore.html}
+        </DialogContentText>
+      </DialogContent>,
+      open: true
+    });
+  }
 
 }

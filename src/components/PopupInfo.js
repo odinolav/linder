@@ -13,19 +13,22 @@ export default class Popup_Disclaimer extends Popup {
   constructor() {
     super();
 
-    this.body = <DialogContent>
-      <DialogContentText id='alert-dialog-slide-description'>
-        <span>
-          <Typography component='span' variant='h6'>Background</Typography>
-          {STRINGS.background}
-          <br/><br/>
-          <Typography component='span' variant='h6'>Instructions</Typography>
-          {STRINGS.instructions}</span>
-      </DialogContentText>
-    </DialogContent>;
-
     this.title = 'Research Information';
     this.actions = <OkayButton/>;
+
+    this.state = {
+      open: true,
+      body: <DialogContent>
+        <DialogContentText id='alert-dialog-slide-description'>
+          <span>
+            <Typography component='span' variant='h6'>Background</Typography>
+            {STRINGS.background}
+            <br/><br/>
+            <Typography component='span' variant='h6'>Instructions</Typography>
+            {STRINGS.instructions}</span>
+        </DialogContentText>
+      </DialogContent>
+    }
   }
 
 }

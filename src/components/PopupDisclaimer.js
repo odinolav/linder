@@ -11,14 +11,18 @@ export default class PopupDisclaimer extends Popup {
   constructor() {
     super();
 
-    this.body = <DialogContent>
-      <DialogContentText id='alert-dialog-slide-description'>
-        {STRINGS.disclaimer}
-      </DialogContentText>
-    </DialogContent>;
-
     this.title = 'Disclaimer';
     this.actions = <OkayButton/>;
+
+    this.state = {
+      open: true,
+      body:
+        <DialogContent>
+          <DialogContentText id='alert-dialog-slide-description'>
+            {STRINGS.disclaimer}
+          </DialogContentText>
+        </DialogContent>
+    }
   }
 
 }

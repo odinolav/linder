@@ -16,7 +16,8 @@ export default class Popup extends Component {
     super();
 
     this.state = {
-      open: true
+      open: true,
+      body: ''
     }
   }
 
@@ -24,7 +25,6 @@ export default class Popup extends Component {
     linderStore.on(':OPEN_POPUP', this.handleOpen)
     .on(':CLOSE_POPUP', this.handleClose);
   }
-
   componentWillUnmount() {
     linderStore.removeListener(':OPEN_POPUP', this.handleOpen)
     .removeListener(':CLOSE_POPUP', this.handleClose);
@@ -52,7 +52,7 @@ export default class Popup extends Component {
       <DialogTitle id='alert-dialog-slide-title' color='primary'>
         <Typography component='span' variant='h4' color='primary'>{this.title}</Typography>
       </DialogTitle>
-      {this.body}
+      {this.state.body}
       {this.actions}
     </Dialog>
   );
