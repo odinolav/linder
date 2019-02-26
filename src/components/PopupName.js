@@ -4,8 +4,6 @@ import Popup from 'components/Popup';
 import TextField from '@material-ui/core/TextField';
 import Button from '@material-ui/core/Button';
 
-import linderStore from 'flux/LinderStore';
-
 export default class PopupDisclaimer extends Popup {
 
   constructor() {
