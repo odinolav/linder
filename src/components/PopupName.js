@@ -13,6 +13,7 @@ export default class PopupDisclaimer extends Popup {
 
     this.state = {
       open: true,
+      name: '',
       body:
         <DialogContent>
             <TextField
@@ -40,11 +41,8 @@ export default class PopupDisclaimer extends Popup {
    }
 
   submitName = () => {
-    if (this.checkNameValid(this.state.name)) {
-      linderStore.updateName(this.state.name);
-      this.setState({open: false});
-    }
-
+    localStorage.setItem('name', this.state.name);
+    this.setState({open: false});
   }
 
   handleChange = (event) => {

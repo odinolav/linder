@@ -51,13 +51,11 @@ class App extends Component {
     }
 
     linderStore.on(':OPEN_POPUP', this.handleOpen)
-    .on(':CLOSE_POPUP', this.handleClose)
-    .on(':CARD_EXPAND_TOGGLE', this.toggleExpandCard);
+    .on(':CLOSE_POPUP', this.handleClose);
   }
 
   componentDidMount = () => {
-    if (!linderStore.name) {
-      console.log('weee');
+    if (!localStorage.getItem('name')) {
       linderStore.openNameBox();
     }
   }
@@ -65,17 +63,10 @@ class App extends Component {
   componentWillUnmount() {
     linderStore.removeListener(':OPEN_POPUP', this.handleOpen)
     .removeListener(':CLOSE_POPUP', this.handleClose)
-    .removeListener(':CARD_EXPAND_TOGGLE', this.toggleExpandCard);
-  }
-
-  toggleExpandCard = () => {
-    this.setState({
-      'Name_Expanded': linderStore['Name_Expanded']
-    });
   }
 
   loadAllDays = () => {
-    let potentialName = localStorage.getItem('name');
+    let potentialName = localStorage.getItem('name') || 'YOUR_NAME_HERE';
     let all = [];
     for (let key of Object.keys(localStorage)) {
       if (key.substring(0,12) === 'daySchedule_') {
@@ -86,7 +77,7 @@ class App extends Component {
     let currentDayIndex = Object.keys(all).length-1;
     linderStore.allDays = all;
     this.setState({
-      name: potentialName ? potentialName : '',
+      name: potentialName,
     }, ()=>{this.handleTabChange(null, currentDayIndex)});
   }
 
@@ -108,8 +99,6 @@ class App extends Component {
     window.addEventListener("beforeunload", (ev) => {
        ev.preventDefault();
        this.saveAllDays();
-       localStorage.setItem('name', this.state.name);
-       localStorage.setItem('nameComplete', this.state.nameComplete);
     });
    };
 

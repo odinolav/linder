@@ -14,7 +14,7 @@ export default class Popup_Disclaimer extends Popup {
   constructor() {
     super();
     linderStore.makeEmailMessage();
-    let mailUrl = `mailto:${SECRET_STRINGS.targetEmail}?subject=Research Journal for ${linderStore.name} ${DateHelpers.convertToHumanDate(linderStore.currentDay)}`;
+    let mailUrl = `mailto:${SECRET_STRINGS.targetEmail}?subject=Research Journal for ${localStorage.getItem('name')} ${DateHelpers.convertToHumanDate(linderStore.currentDay)}`;
 
     this.state = {
       open: true,

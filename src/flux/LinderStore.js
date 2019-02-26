@@ -17,14 +17,9 @@ class LinderStore extends EventEmitter {
     this.html = '';
     this.popup = '';
     this.currentDay = DateHelpers.getDateStorageName();
-    this.name = '';
     this.numCardsExpanded = 0;
     this.cardsExpanded = false;
     this.allDays = {};
-  }
-
-  updateName = (newName) => {
-    this.name = newName;
   }
 
   updateExpanded = (num) => {
