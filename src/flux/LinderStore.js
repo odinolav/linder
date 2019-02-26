@@ -5,6 +5,7 @@ import Typography from '@material-ui/core/Typography';
 import PopupDisclaimer from 'components/PopupDisclaimer';
 import PopupMailForm from 'components/PopupMailForm';
 import PopupInfo from 'components/PopupInfo';
+import PopupName from 'components/PopupName';
 
 import STRINGS from 'text/Strings.js';
 import DateHelpers from 'helpers/DateHelpers';
@@ -17,10 +18,13 @@ class LinderStore extends EventEmitter {
     this.popup = '';
     this.currentDay = DateHelpers.getDateStorageName();
     this.name = '';
-    this['Name_Expanded'] = false;
     this.numCardsExpanded = 0;
     this.cardsExpanded = false;
     this.allDays = {};
+  }
+
+  updateName = (newName) => {
+    this.name = newName;
   }
 
   updateExpanded = (num) => {
@@ -79,6 +83,10 @@ class LinderStore extends EventEmitter {
   }
   openInfoBox = () => {
     this.popup = <PopupInfo />;
+    this.openPopup()
+  }
+  openNameBox = () => {
+    this.popup = <PopupName />;
     this.openPopup()
   }
 

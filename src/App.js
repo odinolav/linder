@@ -4,19 +4,7 @@ import 'css/App.css';
 import { withStyles } from '@material-ui/core/styles';
 import withRoot from 'withRoot';
 import Grid from '@material-ui/core/Grid';
-import TextField from '@material-ui/core/TextField';
-import { Edit } from '@material-ui/icons';
-import IconButton from '@material-ui/core/IconButton';
 import AppBar from '@material-ui/core/AppBar';
-import Card from '@material-ui/core/Card';
-import CardActionArea from '@material-ui/core/CardActionArea';
-import CardActions from '@material-ui/core/CardActions';
-import CardContent from '@material-ui/core/CardContent';
-import CardMedia from '@material-ui/core/CardMedia';
-import Chip from '@material-ui/core/Chip';
-import Collapse from '@material-ui/core/Collapse';
-import Typography from '@material-ui/core/Typography';
-import classnames from 'classnames';
 import Tabs from '@material-ui/core/Tabs';
 import Tab from '@material-ui/core/Tab';
 
@@ -26,12 +14,6 @@ import LinderAppBar from 'components/LinderAppBar';
 import DayPartCard from 'components/DayPartCard';
 
 import linderStore from 'flux/LinderStore';
-
-import PROFILE from './img/profile.jpg';
-
-const cardImgMap = {
-  'Name': PROFILE
-}
 
 
 class App extends Component {
@@ -73,6 +55,13 @@ class App extends Component {
     .on(':CARD_EXPAND_TOGGLE', this.toggleExpandCard);
   }
 
+  componentDidMount = () => {
+    if (!linderStore.name) {
+      console.log('weee');
+      linderStore.openNameBox();
+    }
+  }
+
   componentWillUnmount() {
     linderStore.removeListener(':OPEN_POPUP', this.handleOpen)
     .removeListener(':CLOSE_POPUP', this.handleClose)
@@ -87,7 +76,6 @@ class App extends Component {
 
   loadAllDays = () => {
     let potentialName = localStorage.getItem('name');
-    let nameValid = this.checkNameValid(potentialName);
     let all = [];
     for (let key of Object.keys(localStorage)) {
       if (key.substring(0,12) === 'daySchedule_') {
@@ -99,7 +87,6 @@ class App extends Component {
     linderStore.allDays = all;
     this.setState({
       name: potentialName ? potentialName : '',
-      nameComplete: nameValid
     }, ()=>{this.handleTabChange(null, currentDayIndex)});
   }
 
@@ -126,15 +113,6 @@ class App extends Component {
     });
    };
 
-   checkNameValid = (name) => {
-     return (name.length > 4 && name.trim().split(' ').length > 1);
-   }
-
-  handleNameChange = event => {
-    let newVal = event.target.value;
-    this.setState({name: newVal, nameComplete: this.checkNameValid(newVal)});
-  }
-
   handleOpen = () => {
     this.setState({ popup: linderStore.popup });
   }
@@ -153,7 +131,6 @@ class App extends Component {
 
   render() {
     const isMobile = window.innerWidth < 600;
-    const { classes } = this.props;
     const currentDS = linderStore.allDays[this.state.currentDay];
     let mainCards = [];
     for (let timeOfDay of Object.keys(currentDS)) {
@@ -188,51 +165,6 @@ class App extends Component {
         {this.state.popup}
 
         <Grid container className='maingrid' justify='center' alignItems='center'>
-          <Card className={isMobile ? classes.phoneCard : classes.card} key='k.1'>
-            <CardActionArea onClick={()=>linderStore.toggleExpandCard('Name')}>
-              <CardMedia
-                className={classes.media}
-                image={cardImgMap['Name']}
-                title='Your info'
-              />
-              <CardContent>
-                <Typography gutterBottom variant={isMobile ? "h6": "h5"} component="h2">Profile</Typography>
-              </CardContent>
-            </CardActionArea>
-            <CardActions>
-              <Chip color={this.state.nameComplete ? 'primary' : 'secondary'} label={this.state.nameComplete ? 'Ready' : 'Incomplete'}/>
-              <IconButton
-                className={classnames(classes.expand, {
-                  [classes.expandOpen]: this.state['Name_Expanded'],
-                })}
-                onClick={()=>linderStore.toggleExpandCard('Name')}
-                aria-expanded={this.state['Name_Expanded']}
-                aria-label="Show more"
-              >
-                <Edit />
-              </IconButton>
-            </CardActions>
-            <Collapse in={this.state['Name_Expanded']} timeout="auto" unmountOnExit>
-            <CardContent>
-              <TextField
-                autoFocus
-                name='namefield'
-                id='outlined-controlled'
-                multiline
-                fullWidth
-                rowsMax='3'
-                value={this.state.name}
-                placeholder='your full name'
-                onChange={e => this.handleNameChange(e)}
-                margin='dense'
-                helperText=''
-                type='text'
-                variant='standard'
-              />
-            </CardContent>
-          </Collapse>
-          </Card>
-
           {mainCards}
         </Grid>
       </div>
